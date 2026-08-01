@@ -1,0 +1,38 @@
+/* Marquee primitive — see Marquee.jsx. */
+
+.marquee {
+  overflow: clip;
+  max-width: 100%;
+}
+
+.marquee__track {
+  display: flex;
+  width: max-content;
+}
+
+.marquee__group {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .marquee__track {
+    animation: marquee-scroll var(--marquee-dur, 24s) linear infinite;
+  }
+
+  .marquee--reverse .marquee__track {
+    animation-direction: reverse;
+  }
+
+  .marquee--pausable:hover .marquee__track,
+  .marquee--pausable:focus-within .marquee__track {
+    animation-play-state: paused;
+  }
+}
+
+@keyframes marquee-scroll {
+  to {
+    transform: translateX(-50%);
+  }
+}

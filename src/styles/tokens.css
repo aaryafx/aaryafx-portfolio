@@ -1,0 +1,78 @@
+/* ============================================================
+   AARYAFX — design tokens v2 ("Poster wall")
+   The single source of truth. Components never hardcode values.
+   See DESIGN.md for the rationale behind each choice.
+   ============================================================ */
+
+:root {
+  /* --- Colour: warm paper ground, dark only inside screens --- */
+  --paper: #f1efe9;
+  --paper-2: #e8e5dc;
+  --ink: #131311;
+  --muted: #787369;
+  --line: rgb(19 19 17 / 16%);
+  --line-strong: rgb(19 19 17 / 34%);
+
+  --accent: #ff4b0a; /* record orange */
+  --teal: #7cbfb0; /* rare sticker colour, tiny doses */
+
+  --screen: #0c0c0b; /* dark viewport fills */
+  --screen-ink: #f3f1eb; /* text on dark viewports */
+  --screen-line: rgb(243 241 235 / 18%);
+
+  /* --- Type --- */
+  --font-display: "Archivo", "Helvetica Neue", Arial, sans-serif;
+  --font-body: "Archivo", "Helvetica Neue", Arial, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+
+  --fs-marquee: clamp(6rem, 21vw, 19rem); /* hero wordmark band */
+  --fs-hero: clamp(3rem, 9.5vw, 8.5rem);
+  --fs-xl: clamp(2.25rem, 6vw, 4.75rem);
+  --fs-lg: clamp(1.625rem, 3.4vw, 2.75rem);
+  --fs-md: clamp(1.0625rem, 1.5vw, 1.3125rem);
+  --fs-body: 1rem;
+  --fs-sm: 0.8125rem;
+  --fs-xs: 0.6875rem;
+
+  --lh-tight: 0.92;
+  --lh-snug: 1.15;
+  --lh-body: 1.6;
+
+  /* Expanded display axis = widescreen. Used with restraint. */
+  --wdth-display: 118;
+  --wdth-body: 100;
+
+  /* --- Space --- */
+  --gutter: clamp(1.25rem, 4vw, 4rem);
+  --section-y: clamp(5rem, 12vh, 9.5rem);
+  --stack: clamp(1.5rem, 3vw, 2.5rem);
+  --maxw: 90rem;
+  --maxw-prose: 34rem;
+
+  /* --- Shape: pills for controls, soft panels, rounder screens --- */
+  --r-pill: 999px;
+  --r-sm: 4px;
+  --r-md: 10px;
+  --r-lg: 14px;
+
+  /* --- Motion --- */
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --dur-fast: 180ms;
+  --dur: 420ms;
+  --dur-slow: 900ms;
+
+  /* --- Layering --- */
+  --z-hud: 60;
+  --z-nav: 70;
+  --z-overlay: 80;
+}
+
+/* Motion is an enhancement, never a requirement. */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --dur-fast: 1ms;
+    --dur: 1ms;
+    --dur-slow: 1ms;
+  }
+}

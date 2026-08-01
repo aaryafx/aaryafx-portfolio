@@ -1,0 +1,338 @@
+/* ============================================================
+   Home — poster-wall landing.
+   1 hero marquee wordmark · 2 showreel viewport · 3 about + pillars
+   · 4 draggable work strip · 5 clients line.
+   All colours/sizes/durations come from tokens.css.
+   ============================================================ */
+
+/* --- 1 · Hero: full viewport, wordmark band centered --- */
+
+.hero {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-height: 100svh;
+
+  /* Absolute pill nav floats on top (~4rem, taller when wrapped on mobile) */
+  padding-block-start: clamp(7.5rem, 16vh, 10rem);
+  padding-block-end: clamp(1.5rem, 4vh, 3rem);
+}
+
+/* Full-bleed band, vertically centered in the leftover viewport. */
+.hero__band {
+  position: relative;
+  width: 100%;
+  margin-block: auto;
+}
+
+.hero__word {
+  font-size: var(--fs-marquee);
+  white-space: nowrap;
+}
+
+.hero__reg {
+  font-size: 0.28em;
+  vertical-align: super;
+  margin-inline-start: 0.12em;
+}
+
+.hero__sep {
+  display: inline-block;
+  margin-inline: 0.18em;
+}
+
+/* Stickers overlap the band edges. Sparse: exactly two on this page. */
+.hero__sticker {
+  position: absolute;
+  z-index: 1;
+}
+
+.hero__sticker--rec {
+  top: -0.8rem;
+  right: clamp(1.25rem, 10vw, 9rem);
+}
+
+.hero__sticker--zepto {
+  bottom: -1rem;
+  left: clamp(1.25rem, 7vw, 7rem);
+}
+
+/* Role line + scroll cue under the band */
+.hero__row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.hero__role {
+  font-family: var(--font-mono);
+  font-size: var(--fs-sm);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+/* Mount rise, CSS-only. Base state above is fully visible, so
+   reduced-motion and no-JS users lose nothing. */
+@media (prefers-reduced-motion: no-preference) {
+  .hero__band,
+  .hero__row {
+    animation: hero-rise var(--dur-slow) var(--ease-out) backwards;
+  }
+
+  .hero__row {
+    animation-delay: var(--dur-fast);
+  }
+}
+
+@keyframes hero-rise {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+}
+
+/* --- Section rhythm --- */
+
+.home__section {
+  padding-block: calc(var(--section-y) / 2);
+}
+
+/* --- 2 · Showreel: dark viewport punched into the paper --- */
+
+.home__reel {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 21 / 9;
+  overflow: hidden;
+  border-radius: var(--r-lg);
+  background: var(--screen);
+}
+
+/* Mono metadata inside the viewport reads in screen ink. */
+.home__reel .meta {
+  color: var(--screen-ink);
+  opacity: 0.65;
+}
+
+.home__reel-slate {
+  position: absolute;
+  top: 1rem;
+  left: 1.25rem;
+}
+
+.home__reel-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: clamp(0.75rem, 2vw, 1.25rem);
+  padding: 1rem;
+  text-align: center;
+}
+
+.home__reel-title {
+  color: var(--screen-ink);
+  font-size: var(--fs-hero);
+}
+
+/* Pill restyled for dark ground. Chained selectors so the override
+   beats base .pill/.pill:hover regardless of stylesheet order. */
+.pill.home__reel-pill {
+  color: var(--screen-ink);
+  border-color: var(--screen-line);
+}
+
+.pill.home__reel-pill:hover {
+  background: var(--screen-ink);
+  border-color: var(--screen-ink);
+  color: var(--screen);
+}
+
+/* --- 3 · About teaser + pillars --- */
+
+.home__lede {
+  max-width: calc(var(--maxw-prose) * 1.5);
+  font-size: var(--fs-lg);
+  font-weight: 500;
+  line-height: var(--lh-snug);
+  letter-spacing: -0.01em;
+  text-wrap: balance;
+}
+
+.home__pillars {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(1.5rem, 3vw, 3rem);
+  margin-block-start: calc(var(--stack) * 1.5);
+}
+
+.home__pillar {
+  border-block-start: 1px solid var(--line);
+  padding-block-start: 1.25rem;
+}
+
+.home__pillar-num {
+  font-family: var(--font-mono);
+  font-size: var(--fs-lg);
+  font-weight: 700;
+  line-height: 1;
+  color: var(--accent);
+}
+
+.home__pillar-name {
+  margin-block-start: 0.5rem;
+  font-size: var(--fs-lg);
+}
+
+.home__pillar-line {
+  margin-block-start: 0.75rem;
+  font-size: var(--fs-md);
+  font-style: italic;
+  line-height: var(--lh-snug);
+  color: var(--muted);
+}
+
+.home__pillar-body {
+  margin-block-start: 0.75rem;
+  max-width: var(--maxw-prose);
+  line-height: var(--lh-body);
+}
+
+.home__pillar-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-block-start: 1rem;
+}
+
+.home__cta {
+  margin-block-start: calc(var(--stack) * 1.25);
+}
+
+/* --- 4 · Work strip: draggable, full-bleed, DRAG chip follows cursor --- */
+
+.home__dragwrap {
+  position: relative;
+}
+
+.home__strip {
+  display: flex;
+  align-items: flex-start;
+  gap: clamp(1rem, 2.5vw, 2rem);
+  overflow-x: auto;
+
+  /* Full-bleed scroller whose first slide aligns with the container. */
+  padding-inline: max(var(--gutter), calc((100% - var(--maxw)) / 2 + var(--gutter)));
+  padding-block: 0.5rem 1rem;
+  cursor: grab;
+  user-select: none;
+  -webkit-user-select: none;
+  scrollbar-width: none;
+}
+
+.home__strip::-webkit-scrollbar {
+  display: none;
+}
+
+.home__strip.is-dragging {
+  cursor: grabbing;
+}
+
+.home__slide {
+  flex: 0 0 clamp(16rem, 38vw, 30rem);
+  min-width: 0;
+}
+
+/* Alternate top offsets for the scattered poster-wall look. */
+.home__slide--drop {
+  margin-block-start: 2.5rem;
+}
+
+/* Cursor-following DRAG chip. Transform is set from JS via ref;
+   only opacity transitions, so the follow never lags. */
+.home__dragchip {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 2;
+  padding: 1.1em 1.5em;
+  border-radius: var(--r-pill);
+  background: var(--ink);
+  color: var(--paper);
+  font-size: var(--fs-sm);
+  pointer-events: none;
+  opacity: 0;
+  transform: translate3d(-9rem, -9rem, 0);
+  transition: opacity var(--dur-fast) var(--ease-out);
+  will-change: transform;
+}
+
+.home__dragchip.is-on {
+  opacity: 1;
+}
+
+.home__work-cta {
+  display: flex;
+  justify-content: center;
+  margin-block-start: var(--stack);
+}
+
+/* --- 5 · Clients line: one quiet mono marquee --- */
+
+.home__clientsline {
+  padding-block: calc(var(--section-y) / 3);
+}
+
+.home__client {
+  display: inline-flex;
+  align-items: center;
+  font-family: var(--font-mono);
+  font-size: var(--fs-md);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  white-space: nowrap;
+  color: var(--muted);
+}
+
+.home__client-sep {
+  margin-inline: 1.25rem;
+  color: var(--accent);
+}
+
+/* --- Responsive --- */
+
+@media (hover: none) {
+  .home__dragchip {
+    display: none;
+  }
+}
+
+@media (width < 48rem) {
+  .home__reel {
+    aspect-ratio: 16 / 9;
+  }
+
+  .home__pillars {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .home__slide--drop {
+    margin-block-start: 1.5rem;
+  }
+}
+
+@media (width < 40rem) {
+  .hero__sticker--zepto {
+    display: none;
+  }
+
+  .hero__row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+}

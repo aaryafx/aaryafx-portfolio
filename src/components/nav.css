@@ -1,0 +1,84 @@
+/* Pill nav floating on the paper. Absolute over the hero, not fixed —
+   the page is a poster, not an app frame. */
+
+.nav {
+  position: absolute;
+  inset-inline: 0;
+  top: 0;
+  z-index: var(--z-nav);
+  padding-block: clamp(0.9rem, 2.5vw, 1.5rem);
+}
+
+.nav__inner {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.nav__brand {
+  font-family: var(--font-display);
+  font-variation-settings: "wdth" var(--wdth-display);
+  font-weight: 900;
+  font-size: 1.05rem;
+  letter-spacing: -0.01em;
+  margin-inline-end: 0.75rem;
+}
+
+.nav__brand-r {
+  font-size: 0.55em;
+  vertical-align: super;
+  font-weight: 700;
+}
+
+.nav__links {
+  display: flex;
+  gap: 0.5rem;
+}
+
+/* Active page gets an accent dot inside its pill. */
+.nav__dot {
+  width: 0.5em;
+  height: 0.5em;
+  border-radius: 50%;
+  background: var(--accent);
+}
+
+.nav__pill:hover .nav__dot {
+  background: var(--paper);
+}
+
+.nav__geo {
+  margin-inline: auto;
+  text-align: center;
+  line-height: 1.5;
+}
+
+.nav__hire {
+  margin-inline-start: auto;
+}
+
+@media (width < 64rem) {
+  .nav__geo {
+    display: none;
+  }
+}
+
+@media (width < 40rem) {
+  .nav__inner {
+    flex-wrap: wrap;
+  }
+
+  .nav__brand {
+    flex: 1;
+  }
+
+  .nav__hire {
+    order: 2;
+  }
+
+  .nav__links {
+    order: 3;
+    width: 100%;
+    overflow-x: auto;
+  }
+}

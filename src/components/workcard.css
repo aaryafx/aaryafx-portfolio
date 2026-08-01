@@ -1,0 +1,142 @@
+/* WorkCard — hover-scrub clip. A dark viewport punched into the paper,
+   like a monitor on a bright desk. The scrub is the signature. */
+
+.workcard {
+  display: block;
+  border-radius: var(--r-lg);
+}
+
+.workcard__screen {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  border-radius: var(--r-lg);
+  background: var(--screen);
+  cursor: crosshair;
+  transition: transform var(--dur) var(--ease-out);
+}
+
+.workcard:hover .workcard__screen,
+.workcard:focus-visible .workcard__screen {
+  transform: scale(0.985);
+}
+
+.workcard__video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Placeholder frame: duotone grade per client, shifts as you scrub */
+.workcard__frame {
+  position: absolute;
+  inset: 0;
+}
+
+.workcard__framegfx {
+  position: absolute;
+  inset: -8% -14% -8% 0;
+  background:
+    radial-gradient(90% 120% at 68% 38%, var(--h2) 0%, transparent 58%),
+    radial-gradient(120% 150% at 22% 78%, color-mix(in oklab, var(--h2), var(--h1) 55%) 0%, transparent 62%),
+    linear-gradient(155deg, var(--h1), color-mix(in oklab, var(--h1), black 35%));
+  filter: saturate(0.92);
+  transition: transform 80ms linear;
+}
+
+.workcard__framenum {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.9rem;
+  color: var(--screen-ink);
+  opacity: 0.65;
+}
+
+/* in/out brackets appear while scrubbing */
+.workcard__bracket {
+  position: absolute;
+  inset-block: 0.65rem;
+  width: 1rem;
+  border: 1px solid var(--screen-ink);
+  opacity: 0;
+  transition: opacity var(--dur-fast) var(--ease-out);
+}
+
+.workcard__bracket--in {
+  left: 0.65rem;
+  border-inline-end: 0;
+}
+
+.workcard__bracket--out {
+  right: 0.65rem;
+  border-inline-start: 0;
+}
+
+.workcard.is-active .workcard__bracket {
+  opacity: 0.55;
+}
+
+/* scrub bar + playhead */
+.workcard__scrub {
+  position: absolute;
+  inset-inline: 0;
+  bottom: 0;
+  height: 3px;
+  background: var(--screen-line);
+  opacity: 0;
+  transition: opacity var(--dur-fast) var(--ease-out);
+}
+
+.workcard.is-active .workcard__scrub {
+  opacity: 1;
+}
+
+.workcard__scrub-fill {
+  height: 100%;
+  background: var(--screen-ink);
+  transform-origin: left;
+}
+
+.workcard__playhead {
+  position: absolute;
+  top: -5px;
+  width: 2px;
+  height: 13px;
+  background: var(--accent);
+}
+
+/* info block below the screen */
+.workcard__info {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  column-gap: 0.9rem;
+  padding-block-start: 0.9rem;
+}
+
+.workcard__index {
+  grid-row: 1 / span 2;
+  color: var(--accent);
+  font-weight: 700;
+}
+
+.workcard__client {
+  font-family: var(--font-display);
+  font-variation-settings: "wdth" var(--wdth-display);
+  font-weight: 800;
+  font-size: var(--fs-md);
+  line-height: var(--lh-snug);
+  text-transform: uppercase;
+  letter-spacing: -0.01em;
+}
+
+.workcard__title {
+  grid-column: 2;
+  color: var(--muted);
+  font-size: var(--fs-sm);
+  line-height: 1.45;
+}
+
+.workcard__meta {
+  grid-column: 2;
+  margin-block-start: 0.35rem;
+}
