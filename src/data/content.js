@@ -83,8 +83,9 @@ export const pillars = [
 ]
 
 export const closing = {
-  line: 'Good footage is only half the story. The cut makes it land.',
-  cta: 'Start a project',
+  kicker: "Let's go !!",
+  line: 'Need videos that stop the scroll?',
+  cta: "Let's talk",
 }
 
 /**

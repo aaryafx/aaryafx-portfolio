@@ -1,4 +1,4 @@
-# AARYAFX — Design Contract v2 ("Poster wall")
+# AARYAFX — Design Contract v3 ("Holo dark")
 
 **Subject:** Aarya Patel / AARYAFX — video editor & content creator, Ahmedabad. Five years
 cutting short-form and brand content. 100+ videos for Zepto; brand work for Phoenix Palladium,
@@ -6,82 +6,68 @@ Gujarat Titans, Shivalik, Space India. Studio: Craywingz.
 
 **The page's one job:** get a brand/agency person to watch the work, then email him.
 
-**References (user-supplied):**
-- benorth.studio — overall site + landing: warm cream ground, giant black grotesk marquee
-  wordmark hero, pill-outline nav with ↗ arrows, orange accent metadata, collage/sticker
-  physicality, full-bleed showreel block, numbered service pillars with tag lists, DRAG
-  project carousel, big closing statement, address/contact footer.
-- pacomepertant.com/about — About page: one giant centered statement with small media
-  chips inline in the sentence, an accent asterisk ✲, rotating circular "showreel" text
-  badge, horizontal auto-marquee of project thumbnails, minimal socials footer.
+**Reference (user-supplied): morez.co** — near-black ground where all content lives inside
+big rounded panels; soft holographic/iridescent mesh gradients (pink → violet → green →
+yellow) as panel fills; bold white grotesk headings; **mono body text**; a scratchy
+hand-drawn marker logo; dual-direction name marquee bands with ✳/✚ separators; rotating
+circular-text badges with a starburst center; playful stickers (smiley) and hand-drawn
+underline accents on key words; client work as full-width solid-colour rounded panels with
+the logo centered and name + URL below; gradient CTA pills; footer contact as stacked
+outlined rounded rows; sections occasionally flip to a soft light gradient.
 
-**Direction:** BeNorth's daylight poster-wall energy, carried by an editor's vocabulary.
-Light warm paper, huge black expanded type, one hot "record" orange. The dark lives only
-inside screens — video blocks and work thumbnails are little dark viewports punched into
-the paper, like monitors on a bright desk. Mono metadata voice (timecode, REC, aspect
-ratios) survives from v1 as the utility layer.
+**Direction:** Morez's holo-dark panel system, in an editor's hands. The black is the edit
+suite; the holo gradients are light spill from a monitor. The mono body voice survives from
+v1/v2. The hover-scrub work interaction survives inside the panels — it's still the one
+thing only an editor's portfolio would do.
 
-## Signature moves (spend boldness here, keep the rest quiet)
+## Signature moves
 
-1. **Hero marquee wordmark** — "AARYAFX®" repeating, massive, scrolling horizontally.
-2. **DRAG work carousel** — draggable strip with a cursor-following "DRAG" chip.
-3. **Hover-scrub cards** — kept from v1 (editors preview clips by scrubbing); restyled
-   as dark viewports on paper.
-4. **Sticker layer** — small tilted mono chips (REC ●, 2.39:1, "100+ CUTS FOR ZEPTO",
-   coordinates). Sparse: 2–3 per page maximum. They straighten on hover.
-5. **About statement** — Pacôme-style giant sentence with inline chips, in our light system.
+1. **Holo panels** — big rounded (24px) panels filled with soft iridescent mesh gradients.
+   The hero is one. Class `.holo` (+ variants) in base.css.
+2. **Dual marquee band** — two rows of "AARYAFX ✳ AARYAFX ✚" scrolling opposite
+   directions (Marquee component, `reverse` on one).
+3. **Scratchy brand** — Permanent Marker for the logo + tiny sticker moments ONLY.
+   Never for headings or body.
+4. **Rotating badge** — circular text + starburst center (shared `Badge` component),
+   used as scroll cue / contact link.
+5. **Hover-scrub work panels** — kept from v2, chrome adapted: full-width client panels
+   (duotone from item hues) that scrub on pointer move.
+6. **Marker accents** — hand-drawn dashed/highlight underline on one key word per
+   section (CSS, no images).
 
-## Tokens — the contract (`src/styles/tokens.css`)
-
-Never hardcode a colour, size, or duration in a component.
+## Tokens (`src/styles/tokens.css`) — never hardcode values in components
 
 | Token | Value | Use |
 |---|---|---|
-| `--paper` | `#F1EFE9` | Page ground |
-| `--paper-2` | `#E8E5DC` | Raised panels, pills' hover fill |
-| `--ink` | `#131311` | Type, borders, dark fills |
-| `--muted` | `#787369` | Secondary text |
-| `--line` | `rgba(19,19,17,.16)` | Hairlines |
-| `--line-strong` | `rgba(19,19,17,.34)` | Pill outlines |
-| `--accent` | `#FF4B0A` | Record orange. Metadata highlights, CTAs, the ✲ |
-| `--teal` | `#7CBFB0` | Rare second sticker colour (badge-style), tiny doses |
-| `--screen` | `#0C0C0B` | Dark viewport fills (showreel, card screens) |
-| `--screen-ink` | `#F3F1EB` | Text on dark viewports |
+| `--black` | `#070707` | Page ground |
+| `--panel` | `#0E0E0E` | Solid dark panels on black |
+| `--white` | `#FAFAFA` | Headings, primary text |
+| `--muted` | `rgba(250,250,250,.62)` | Secondary text |
+| `--line` | `rgba(250,250,250,.16)` | Outlined rows, hairlines |
+| `--ink` | `#0B0B0B` | Text on light/holo surfaces |
+| Holo stops | `--holo-a #F5A8D0`, `--holo-b #9B8CF2`, `--holo-c #8ED9B5`, `--holo-d #F2E28A` | Mesh gradient system, always used together |
+| `--light` | `#F4EFF2` | Light-flip section ground (soft pink-white) |
 
-Type: Archivo variable (`--font-display` expanded wdth 118 / 800–900, uppercase; body
-normal width) + JetBrains Mono (`--font-mono`) for all metadata, uppercase, tracked.
-Scale: `--fs-marquee` (hero wordmark, ~20vw), `--fs-hero`, `--fs-xl`, `--fs-lg`,
-`--fs-md`, `--fs-body`, `--fs-sm`, `--fs-xs`.
+Type: `--font-head` Archivo (normal width, 700/800, NOT expanded, sentence case — Morez
+headings are Helvetica-plain); `--font-mono` JetBrains Mono — **the body voice**: paragraphs,
+metadata, buttons; `--font-marker` Permanent Marker — logo/stickers only.
+Scale: `--fs-hero`, `--fs-xl`, `--fs-lg`, `--fs-md`, `--fs-body` (mono ~0.9375rem),
+`--fs-sm`, `--fs-xs`.
 
-Shape: pills are fully rounded (`--r-pill: 999px`); panels/cards `--r-md: 10px`;
-screens/viewports `--r-lg: 14px`. Motion tokens as v1 (`--dur-fast/--dur/--dur-slow`,
-`--ease-out`), all collapsing to 1ms under reduced motion.
+Shape: `--r-panel: 24px`, `--r-card: 16px`, `--r-pill: 999px`. Motion tokens unchanged
+(collapse to 1ms under reduced motion).
 
-## Shared primitives (`src/styles/base.css`)
+## Shared primitives (base.css)
 
-- `.container` — gutter + maxwidth.
-- `.meta` — mono uppercase tracked label. `.meta--accent` for orange.
-- `.eyebrow` — section opener row: mono label left, hairline rule filling middle, mono
-  right slot. (Replaces v1 slates.)
-- `.pill` — outlined rounded chip (nav, tags, CTAs). Hover = ink fill / paper text flip.
-  `.pill--solid` inverse. Tag lists are `.pill`s at small size.
-- `.display` — expanded Archivo, uppercase, tight.
-- `.sticker` — tilted mono chip (`--tilt` custom prop per instance), straightens on
-  hover. Paper or accent or teal fill.
-- `.reveal` / `.is-visible` — scroll reveal, base state visible (unchanged from v1).
-- `.marquee` primitive lives in `src/components/Marquee.jsx` — content duplicated
-  aria-hidden, CSS keyframe translate, `--marquee-dur` per instance, static under
-  reduced motion, pauses on hover/focus-within.
+`.container`; `.head` (heading style); `.mono-strong` (bold mono, Morez's emphasis);
+`.holo` / `.holo--cool` / `.holo--warm` (mesh gradient fills); `.panel` (rounded dark
+panel); `.row-outline` (outlined rounded contact row); `.pill` (solid white-on-black /
+`.pill--gradient` holo fill, `.pill--dark` black); `.scratch` (marker font);
+`.underline-marker` (dashed hand-drawn underline accent); `.reveal` as before.
+`Marquee` and `Badge` components in `src/components/`.
 
-## Quality floor — non-negotiable
+## Quality floor
 
-Responsive to 360px. Visible `:focus-visible` everywhere. Reduced motion: marquees
-static, carousel still draggable/scrollable, reveals instant. Keyboard: carousel
-focusable + arrow-scrollable, scrub cards keep arrow-key stepping. One `<h1>` per page.
-Semantic `<nav>/<main>/<footer>`.
-
-## Copy voice
-
-Plain, active, specific to editing. No "passionate", no "elevate", no "storytelling".
-Mono layer speaks in editor shorthand: REC ●, 00:00:00:00, 2.39:1, EST. 2021,
-23.02°N 72.57°E (Ahmedabad). Sentence case prose; uppercase only in mono/display.
+360px-solid, `:focus-visible` everywhere, reduced-motion = static marquees/badges + instant
+reveals, keyboard-reachable interactions, one `<h1>`/page, semantic landmarks. Copy voice:
+plain, specific, a little playful is allowed here ("Let's go") but no agency-speak.

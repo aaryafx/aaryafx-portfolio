@@ -1,6 +1,6 @@
 /* ============================================================
-   AARYAFX — base / reset v2. Layout primitives shared by pages.
-   Light "poster wall" system; dark lives only inside screens.
+   AARYAFX — base / reset v3 ("Holo dark"). Shared primitives.
+   Black ground; content lives inside rounded panels; mono body.
    ============================================================ */
 
 *,
@@ -12,7 +12,7 @@
 }
 
 html {
-  color-scheme: light;
+  color-scheme: dark;
   scroll-behavior: smooth;
 }
 
@@ -23,9 +23,9 @@ html {
 }
 
 body {
-  background: var(--paper);
-  color: var(--ink);
-  font-family: var(--font-body);
+  background: var(--black);
+  color: var(--white);
+  font-family: var(--font-mono);
   font-size: var(--fs-body);
   line-height: var(--lh-body);
   -webkit-font-smoothing: antialiased;
@@ -59,14 +59,14 @@ ol {
 
 /* Visible focus, always. */
 :focus-visible {
-  outline: 2px solid var(--accent);
+  outline: 2px solid var(--holo-b);
   outline-offset: 3px;
-  border-radius: var(--r-sm);
+  border-radius: 4px;
 }
 
 ::selection {
-  background: var(--ink);
-  color: var(--paper);
+  background: var(--holo-b);
+  color: var(--ink);
 }
 
 /* --- shared primitives --- */
@@ -78,161 +78,143 @@ ol {
   padding-inline: var(--gutter);
 }
 
-/* Mono metadata label — uppercase, tracked. The site's utility voice. */
-.meta {
-  font-family: var(--font-mono);
-  font-size: var(--fs-xs);
-  font-weight: 500;
-  text-transform: uppercase;
-  letter-spacing: 0.12em;
-  color: var(--muted);
+/* Headings: plain bold grotesk, sentence case (Morez voice). */
+.head {
+  font-family: var(--font-head);
+  font-weight: 800;
+  line-height: var(--lh-tight);
+  letter-spacing: -0.02em;
 }
 
-.meta--accent {
-  color: var(--accent);
+/* Bold mono emphasis — Morez bolds inline phrases in body text. */
+.mono-strong {
+  font-weight: 700;
+  color: var(--white);
 }
 
-/* Section opener: mono label, hairline rule filling the middle, right slot. */
-.eyebrow {
+/* Scratchy marker voice: logo + stickers ONLY. */
+.scratch {
+  font-family: var(--font-marker);
+  font-weight: 400;
+  line-height: 1;
+}
+
+/* --- Holo mesh gradients: soft iridescent light spill.
+   Always the four stops together; variants shift the weighting. --- */
+.holo {
+  background:
+    radial-gradient(52% 60% at 18% 22%, var(--holo-a) 0%, transparent 62%),
+    radial-gradient(55% 65% at 82% 18%, var(--holo-b) 0%, transparent 64%),
+    radial-gradient(60% 62% at 24% 84%, var(--holo-c) 0%, transparent 62%),
+    radial-gradient(56% 60% at 84% 78%, var(--holo-d) 0%, transparent 64%),
+    linear-gradient(140deg, var(--holo-b), var(--holo-a));
+  color: var(--ink);
+}
+
+.holo--cool {
+  background:
+    radial-gradient(55% 62% at 20% 20%, var(--holo-b) 0%, transparent 62%),
+    radial-gradient(58% 64% at 80% 24%, var(--holo-c) 0%, transparent 64%),
+    radial-gradient(55% 60% at 30% 82%, var(--holo-a) 0%, transparent 60%),
+    radial-gradient(52% 58% at 82% 80%, var(--holo-b) 0%, transparent 62%),
+    linear-gradient(150deg, var(--holo-c), var(--holo-b));
+  color: var(--ink);
+}
+
+.holo--warm {
+  background:
+    radial-gradient(55% 62% at 18% 24%, var(--holo-d) 0%, transparent 62%),
+    radial-gradient(56% 60% at 82% 20%, var(--holo-a) 0%, transparent 62%),
+    radial-gradient(58% 64% at 26% 82%, var(--holo-b) 0%, transparent 64%),
+    radial-gradient(54% 58% at 84% 78%, var(--holo-c) 0%, transparent 60%),
+    linear-gradient(135deg, var(--holo-a), var(--holo-d));
+  color: var(--ink);
+}
+
+/* Rounded panels — the page's building block. */
+.panel {
+  border-radius: var(--r-panel);
+  overflow: clip;
+}
+
+/* Outlined rounded row (Morez footer contact rows). */
+.row-outline {
   display: flex;
   align-items: center;
-  gap: 1rem;
-  margin-block-end: var(--stack);
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 1.4rem 1.5rem;
+  border: 1px solid var(--line);
+  border-radius: var(--r-card);
+  text-align: center;
 }
 
-.eyebrow::after {
-  content: none;
-}
-
-.eyebrow__rule {
-  flex: 1;
-  height: 1px;
-  background: var(--line);
-}
-
-/* Pill — outlined rounded chip. Nav, tags, CTAs. */
+/* Pills — mono voice buttons. */
 .pill {
   display: inline-flex;
   align-items: center;
-  gap: 0.5em;
-  padding: 0.55em 1.1em;
-  border: 1px solid var(--line-strong);
+  gap: 0.55em;
+  padding: 0.8em 1.5em;
   border-radius: var(--r-pill);
   font-family: var(--font-mono);
   font-size: var(--fs-sm);
-  font-weight: 500;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
+  font-weight: 700;
   line-height: 1;
+  background: var(--white);
   color: var(--ink);
-  background: transparent;
   transition:
+    transform var(--dur-fast) var(--ease-out),
     background var(--dur-fast) var(--ease-out),
-    color var(--dur-fast) var(--ease-out),
-    border-color var(--dur-fast) var(--ease-out);
+    color var(--dur-fast) var(--ease-out);
 }
 
 .pill:hover {
-  background: var(--ink);
-  border-color: var(--ink);
-  color: var(--paper);
+  transform: scale(1.04);
 }
 
-.pill--solid {
+.pill--dark {
   background: var(--ink);
-  border-color: var(--ink);
-  color: var(--paper);
+  color: var(--white);
 }
 
-.pill--solid:hover {
-  background: var(--accent);
-  border-color: var(--accent);
+.pill--gradient {
+  background:
+    radial-gradient(80% 120% at 20% 30%, var(--holo-a) 0%, transparent 70%),
+    radial-gradient(90% 130% at 80% 70%, var(--holo-c) 0%, transparent 72%),
+    linear-gradient(120deg, var(--holo-b), var(--holo-c));
   color: var(--ink);
 }
 
-/* Tag lists (services, tools) — smaller, quieter pills. */
-.pill--tag {
-  font-size: var(--fs-xs);
-  padding: 0.5em 0.9em;
-  pointer-events: none;
+.pill--outline {
+  background: transparent;
+  color: var(--white);
+  border: 1px solid var(--line-strong);
 }
 
-/* The ↗ arrow inside pills nudges on hover. */
+/* Arrow inside pills nudges on hover. */
 .pill__arrow {
   display: inline-block;
   transition: transform var(--dur-fast) var(--ease-out);
 }
 
 .pill:hover .pill__arrow {
-  transform: translate(2px, -2px);
+  transform: translateX(3px);
 }
 
-/* Display headline: expanded Archivo, tight leading */
-.display {
-  font-family: var(--font-display);
-  font-variation-settings: "wdth" var(--wdth-display);
-  font-weight: 800;
-  line-height: var(--lh-tight);
-  letter-spacing: -0.015em;
-  text-transform: uppercase;
-  text-wrap: balance;
+/* Hand-drawn dashed underline accent — one key word per section. */
+.underline-marker {
+  text-decoration: underline dashed currentcolor 0.09em;
+  text-decoration-skip-ink: none;
+  text-underline-offset: 0.18em;
 }
 
-/* Sticker — tilted mono chip. Set --tilt per instance; straightens on hover.
-   Sparse: 2–3 per page maximum. */
-.sticker {
-  --tilt: -4deg;
-
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5em;
-  padding: 0.6em 1em;
-  border-radius: var(--r-pill);
-  background: var(--ink);
-  color: var(--paper);
-  font-family: var(--font-mono);
-  font-size: var(--fs-xs);
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  line-height: 1;
-  transform: rotate(var(--tilt));
-  box-shadow: 0 2px 10px rgb(19 19 17 / 18%);
-  transition: transform var(--dur) var(--ease-out);
-}
-
-.sticker:hover {
-  transform: rotate(0deg);
-}
-
-.sticker--accent {
-  background: var(--accent);
-  color: var(--ink);
-}
-
-.sticker--teal {
-  background: var(--teal);
-  color: var(--ink);
-}
-
-/* Blinking record dot for REC stickers/labels. Static under reduced motion. */
-.recdot {
-  width: 0.55em;
-  height: 0.55em;
-  border-radius: 50%;
-  background: currentcolor;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .recdot {
-    animation: recblink 1.6s steps(2, start) infinite;
-  }
-}
-
-@keyframes recblink {
-  50% {
-    opacity: 0.25;
-  }
+/* Highlighter swipe behind a word (Morez pink/green smear). */
+.highlight-marker {
+  background: linear-gradient(100deg, var(--holo-a), var(--holo-c));
+  background-size: 100% 0.42em;
+  background-position: 0 88%;
+  background-repeat: no-repeat;
+  padding-inline: 0.08em;
 }
 
 /* Screen-reader only */

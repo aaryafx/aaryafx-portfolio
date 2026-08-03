@@ -1,84 +1,75 @@
-/* Pill nav floating on the paper. Absolute over the hero, not fixed —
-   the page is a poster, not an app frame. */
+/* Morez-style sticky black bar with scratchy brand + mono links. */
 
 .nav {
-  position: absolute;
-  inset-inline: 0;
+  position: sticky;
   top: 0;
   z-index: var(--z-nav);
-  padding-block: clamp(0.9rem, 2.5vw, 1.5rem);
+  padding: 0.6rem var(--gutter) 0;
 }
 
-.nav__inner {
+.nav__bar {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  justify-content: space-between;
+  gap: 1rem;
+  max-width: var(--maxw);
+  margin-inline: auto;
+  padding: 0.65rem 1.1rem;
+  background: var(--black);
+  border-radius: var(--r-card);
 }
 
 .nav__brand {
-  font-family: var(--font-display);
-  font-variation-settings: "wdth" var(--wdth-display);
-  font-weight: 900;
-  font-size: 1.05rem;
-  letter-spacing: -0.01em;
-  margin-inline-end: 0.75rem;
+  font-size: 1.35rem;
+  color: var(--white);
+  transition: transform var(--dur-fast) var(--ease-out);
 }
 
-.nav__brand-r {
-  font-size: 0.55em;
-  vertical-align: super;
-  font-weight: 700;
+.nav__brand:hover {
+  transform: rotate(-2deg) scale(1.05);
 }
 
 .nav__links {
   display: flex;
-  gap: 0.5rem;
+  align-items: center;
+  gap: clamp(0.75rem, 2.5vw, 1.5rem);
 }
 
-/* Active page gets an accent dot inside its pill. */
-.nav__dot {
-  width: 0.5em;
-  height: 0.5em;
-  border-radius: 50%;
-  background: var(--accent);
+.nav__link {
+  font-family: var(--font-mono);
+  font-size: var(--fs-sm);
+  font-weight: 500;
+  color: var(--muted);
+  transition: color var(--dur-fast) var(--ease-out);
 }
 
-.nav__pill:hover .nav__dot {
-  background: var(--paper);
+.nav__link:hover {
+  color: var(--white);
 }
 
-.nav__geo {
-  margin-inline: auto;
-  text-align: center;
-  line-height: 1.5;
+/* Active page: white + hand-drawn dashed underline. */
+.nav__link.active {
+  color: var(--white);
+  text-decoration: underline dashed currentcolor 0.09em;
+  text-decoration-skip-ink: none;
+  text-underline-offset: 0.3em;
 }
 
 .nav__hire {
-  margin-inline-start: auto;
-}
-
-@media (width < 64rem) {
-  .nav__geo {
-    display: none;
-  }
+  font-size: var(--fs-xs);
+  padding: 0.7em 1.2em;
 }
 
 @media (width < 40rem) {
-  .nav__inner {
-    flex-wrap: wrap;
+  .nav {
+    padding-inline: 0.6rem;
+  }
+
+  .nav__bar {
+    padding-inline: 0.9rem;
   }
 
   .nav__brand {
-    flex: 1;
-  }
-
-  .nav__hire {
-    order: 2;
-  }
-
-  .nav__links {
-    order: 3;
-    width: 100%;
-    overflow-x: auto;
+    font-size: 1.1rem;
   }
 }

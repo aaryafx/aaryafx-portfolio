@@ -1,59 +1,55 @@
 /* ============================================================
-   AARYAFX — design tokens v2 ("Poster wall")
+   AARYAFX — design tokens v3 ("Holo dark")
    The single source of truth. Components never hardcode values.
    See DESIGN.md for the rationale behind each choice.
    ============================================================ */
 
 :root {
-  /* --- Colour: warm paper ground, dark only inside screens --- */
-  --paper: #f1efe9;
-  --paper-2: #e8e5dc;
-  --ink: #131311;
-  --muted: #787369;
-  --line: rgb(19 19 17 / 16%);
-  --line-strong: rgb(19 19 17 / 34%);
+  /* --- Colour: near-black suite, holo light spill in panels --- */
+  --black: #070707;
+  --panel: #0e0e0e;
+  --white: #fafafa;
+  --muted: rgb(250 250 250 / 62%);
+  --line: rgb(250 250 250 / 16%);
+  --line-strong: rgb(250 250 250 / 34%);
+  --ink: #0b0b0b; /* text on holo/light surfaces */
 
-  --accent: #ff4b0a; /* record orange */
-  --teal: #7cbfb0; /* rare sticker colour, tiny doses */
+  /* Holo mesh stops — always used as a system, never one alone */
+  --holo-a: #f5a8d0;
+  --holo-b: #9b8cf2;
+  --holo-c: #8ed9b5;
+  --holo-d: #f2e28a;
 
-  --screen: #0c0c0b; /* dark viewport fills */
-  --screen-ink: #f3f1eb; /* text on dark viewports */
-  --screen-line: rgb(243 241 235 / 18%);
+  --light: #f4eff2; /* light-flip section ground */
 
   /* --- Type --- */
-  --font-display: "Archivo", "Helvetica Neue", Arial, sans-serif;
-  --font-body: "Archivo", "Helvetica Neue", Arial, sans-serif;
+  --font-head: "Archivo", "Helvetica Neue", Arial, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  --font-marker: "Permanent Marker", "Comic Sans MS", cursive;
 
-  --fs-marquee: clamp(6rem, 21vw, 19rem); /* hero wordmark band */
-  --fs-hero: clamp(3rem, 9.5vw, 8.5rem);
-  --fs-xl: clamp(2.25rem, 6vw, 4.75rem);
-  --fs-lg: clamp(1.625rem, 3.4vw, 2.75rem);
+  --fs-hero: clamp(2.75rem, 7.5vw, 6.5rem);
+  --fs-xl: clamp(2.125rem, 5vw, 4.25rem);
+  --fs-lg: clamp(1.5rem, 3vw, 2.5rem);
   --fs-md: clamp(1.0625rem, 1.5vw, 1.3125rem);
-  --fs-body: 1rem;
+  --fs-body: 0.9375rem;
   --fs-sm: 0.8125rem;
   --fs-xs: 0.6875rem;
 
-  --lh-tight: 0.92;
-  --lh-snug: 1.15;
-  --lh-body: 1.6;
-
-  /* Expanded display axis = widescreen. Used with restraint. */
-  --wdth-display: 118;
-  --wdth-body: 100;
+  --lh-tight: 1.02;
+  --lh-snug: 1.2;
+  --lh-body: 1.75;
 
   /* --- Space --- */
-  --gutter: clamp(1.25rem, 4vw, 4rem);
-  --section-y: clamp(5rem, 12vh, 9.5rem);
+  --gutter: clamp(1.25rem, 4vw, 3.5rem);
+  --section-y: clamp(5rem, 12vh, 9rem);
   --stack: clamp(1.5rem, 3vw, 2.5rem);
-  --maxw: 90rem;
-  --maxw-prose: 34rem;
+  --maxw: 84rem;
+  --maxw-prose: 40rem;
 
-  /* --- Shape: pills for controls, soft panels, rounder screens --- */
+  /* --- Shape: everything lives in rounded panels --- */
+  --r-panel: 24px;
+  --r-card: 16px;
   --r-pill: 999px;
-  --r-sm: 4px;
-  --r-md: 10px;
-  --r-lg: 14px;
 
   /* --- Motion --- */
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);

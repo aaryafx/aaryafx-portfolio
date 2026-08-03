@@ -1,0 +1,54 @@
+/* Rotating circular-text badge — see Badge.jsx. */
+
+.badge {
+  position: relative;
+  display: inline-block;
+  width: var(--badge-size, 150px);
+  height: var(--badge-size, 150px);
+}
+
+.badge > svg {
+  width: 100%;
+  height: 100%;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .badge > svg {
+    animation: badge-spin 14s linear infinite;
+  }
+}
+
+@keyframes badge-spin {
+  to {
+    transform: rotate(1turn);
+  }
+}
+
+.badge__text {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  fill: currentcolor;
+}
+
+.badge__burst {
+  position: absolute;
+  inset: 50% auto auto 50%;
+  translate: -50% -50%;
+  width: 38%;
+}
+
+.badge__burst-shape {
+  fill: currentcolor;
+  opacity: 0.16;
+}
+
+.badge__burst-arrow {
+  fill: none;
+  stroke: currentcolor;
+  stroke-width: 2.4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
