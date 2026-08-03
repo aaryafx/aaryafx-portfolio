@@ -1,88 +1,85 @@
 /* ============================================================
-   Home — poster-wall landing.
-   1 hero marquee wordmark · 2 showreel viewport · 3 about + pillars
-   · 4 draggable work strip · 5 clients line.
-   All colours/sizes/durations come from tokens.css.
+   Home — Holo dark landing.
+   1 hero holo panel + scroll badge · 2 dual marquee band
+   · 3 showreel panel · 4 services light flip · 5 stacked work
+   list · 6 CTA panel.
+   All colours/durations come from tokens.css; single-class
+   selectors throughout; mobile overrides at the end.
    ============================================================ */
 
-/* --- 1 · Hero: full viewport, wordmark band centered --- */
+/* --- Section rhythm (nav is sticky and in-flow — no extra clearance) --- */
+
+.home__section {
+  padding-block: calc(var(--section-y) / 2);
+  scroll-margin-block-start: 4.5rem;
+}
+
+/* --- 1 · Hero: one big holo panel filling most of the viewport --- */
 
 .hero {
-  position: relative;
+  padding-block-start: clamp(0.5rem, 2vh, 1rem);
+}
+
+.hero__panel {
   display: flex;
   flex-direction: column;
-  min-height: 100svh;
-
-  /* Absolute pill nav floats on top (~4rem, taller when wrapped on mobile) */
-  padding-block-start: clamp(7.5rem, 16vh, 10rem);
-  padding-block-end: clamp(1.5rem, 4vh, 3rem);
+  align-items: center;
+  justify-content: center;
+  gap: clamp(1.25rem, 3vh, 2rem);
+  min-height: calc(100svh - 6rem);
+  padding: clamp(2rem, 5vw, 4rem);
+  text-align: center;
 }
 
-/* Full-bleed band, vertically centered in the leftover viewport. */
-.hero__band {
+.hero__title {
+  font-size: var(--fs-hero);
+  color: var(--ink);
+  max-width: 14ch;
+  text-wrap: balance;
+}
+
+.hero__intro {
+  max-width: var(--maxw-prose);
+  color: var(--ink);
+}
+
+/* .mono-strong forces white; on the light holo fill the emphasis
+   must stay ink, so this companion class restores inheritance. */
+.hero__strong {
+  color: inherit;
+}
+
+/* Scroll badge straddles the panel's bottom edge: it sits in the
+   black gap below and is pulled up by half its 150px height. */
+.hero__badge {
   position: relative;
-  width: 100%;
-  margin-block: auto;
-}
-
-.hero__word {
-  font-size: var(--fs-marquee);
-  white-space: nowrap;
-}
-
-.hero__reg {
-  font-size: 0.28em;
-  vertical-align: super;
-  margin-inline-start: 0.12em;
-}
-
-.hero__sep {
-  display: inline-block;
-  margin-inline: 0.18em;
-}
-
-/* Stickers overlap the band edges. Sparse: exactly two on this page. */
-.hero__sticker {
-  position: absolute;
   z-index: 1;
-}
-
-.hero__sticker--rec {
-  top: -0.8rem;
-  right: clamp(1.25rem, 10vw, 9rem);
-}
-
-.hero__sticker--zepto {
-  bottom: -1rem;
-  left: clamp(1.25rem, 7vw, 7rem);
-}
-
-/* Role line + scroll cue under the band */
-.hero__row {
   display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 1rem;
+  justify-content: center;
+  margin-block-start: -75px;
 }
 
-.hero__role {
-  font-family: var(--font-mono);
-  font-size: var(--fs-sm);
-  font-weight: 500;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
+.hero__badge-link {
+  display: inline-block;
+  color: var(--white);
+  border-radius: var(--r-pill);
 }
 
-/* Mount rise, CSS-only. Base state above is fully visible, so
-   reduced-motion and no-JS users lose nothing. */
+/* Mount rise, CSS-only. Base state is fully visible, so no-JS and
+   reduced-motion users lose nothing. */
 @media (prefers-reduced-motion: no-preference) {
-  .hero__band,
-  .hero__row {
+  .hero__panel {
     animation: hero-rise var(--dur-slow) var(--ease-out) backwards;
   }
 
-  .hero__row {
+  .hero__title {
+    animation: hero-rise var(--dur-slow) var(--ease-out) backwards;
     animation-delay: var(--dur-fast);
+  }
+
+  .hero__intro {
+    animation: hero-rise var(--dur-slow) var(--ease-out) backwards;
+    animation-delay: calc(var(--dur-fast) * 2);
   }
 }
 
@@ -93,13 +90,36 @@
   }
 }
 
-/* --- Section rhythm --- */
+/* --- 2 · Dual marquee band: two name rows, opposite directions --- */
 
-.home__section {
-  padding-block: calc(var(--section-y) / 2);
+.home__band {
+  overflow: clip;
+  padding-block: calc(var(--section-y) / 3);
 }
 
-/* --- 2 · Showreel: dark viewport punched into the paper --- */
+.home__band-rows {
+  display: grid;
+  gap: 0;
+}
+
+.home__band-word {
+  display: inline-flex;
+  align-items: center;
+  font-size: var(--fs-xl);
+  letter-spacing: -0.03em;
+  line-height: 1.05;
+  white-space: nowrap;
+  color: var(--white);
+  text-transform: uppercase;
+}
+
+.home__band-sep {
+  font-size: 0.52em;
+  margin-inline: 0.55em;
+  color: var(--muted);
+}
+
+/* --- 3 · Showreel: solid dark panel, intentional placeholder --- */
 
 .home__reel {
   position: relative;
@@ -107,209 +127,174 @@
   align-items: center;
   justify-content: center;
   aspect-ratio: 21 / 9;
-  overflow: hidden;
-  border-radius: var(--r-lg);
-  background: var(--screen);
-}
-
-/* Mono metadata inside the viewport reads in screen ink. */
-.home__reel .meta {
-  color: var(--screen-ink);
-  opacity: 0.65;
+  background: var(--panel);
+  border: 1px solid var(--line);
 }
 
 .home__reel-slate {
   position: absolute;
-  top: 1rem;
-  left: 1.25rem;
+  top: 1.1rem;
+  left: 1.3rem;
+  font-size: var(--fs-xs);
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
 }
 
 .home__reel-center {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: clamp(0.75rem, 2vw, 1.25rem);
-  padding: 1rem;
+  gap: clamp(0.9rem, 2vw, 1.4rem);
+  padding: 1.5rem;
   text-align: center;
 }
 
 .home__reel-title {
-  color: var(--screen-ink);
-  font-size: var(--fs-hero);
+  font-size: var(--fs-xl);
+  color: var(--white);
 }
 
-/* Pill restyled for dark ground. Chained selectors so the override
-   beats base .pill/.pill:hover regardless of stylesheet order. */
-.pill.home__reel-pill {
-  color: var(--screen-ink);
-  border-color: var(--screen-line);
+.home__reel-note {
+  font-size: var(--fs-sm);
+  color: var(--muted);
 }
 
-.pill.home__reel-pill:hover {
-  background: var(--screen-ink);
-  border-color: var(--screen-ink);
-  color: var(--screen);
+/* --- 4 · Services: the light flip — one big light panel --- */
+
+.home__light {
+  background: var(--light);
+  color: var(--ink);
+  padding: clamp(3rem, 7vw, 5.5rem) var(--gutter);
 }
 
-/* --- 3 · About teaser + pillars --- */
-
-.home__lede {
-  max-width: calc(var(--maxw-prose) * 1.5);
-  font-size: var(--fs-lg);
+.home__kicker {
+  font-size: var(--fs-sm);
   font-weight: 500;
-  line-height: var(--lh-snug);
-  letter-spacing: -0.01em;
+  letter-spacing: 0.08em;
+  opacity: 0.75;
+  text-align: center;
+}
+
+.home__light-title {
+  margin-block-start: 0.75rem;
+  font-size: var(--fs-xl);
+  text-align: center;
   text-wrap: balance;
 }
 
 .home__pillars {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: clamp(1.5rem, 3vw, 3rem);
+  gap: clamp(1rem, 2vw, 1.5rem);
   margin-block-start: calc(var(--stack) * 1.5);
 }
 
+/* Black cards punched into the light panel */
 .home__pillar {
-  border-block-start: 1px solid var(--line);
-  padding-block-start: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.9rem;
+  background: var(--black);
+  color: var(--white);
+  border-radius: var(--r-card);
+  padding: clamp(1.5rem, 3vw, 2rem);
 }
 
 .home__pillar-num {
-  font-family: var(--font-mono);
-  font-size: var(--fs-lg);
+  font-size: var(--fs-sm);
   font-weight: 700;
-  line-height: 1;
-  color: var(--accent);
+  letter-spacing: 0.14em;
+  color: var(--muted);
 }
 
 .home__pillar-name {
-  margin-block-start: 0.5rem;
   font-size: var(--fs-lg);
 }
 
 .home__pillar-line {
-  margin-block-start: 0.75rem;
-  font-size: var(--fs-md);
-  font-style: italic;
-  line-height: var(--lh-snug);
+  font-size: var(--fs-sm);
   color: var(--muted);
 }
 
 .home__pillar-body {
-  margin-block-start: 0.75rem;
-  max-width: var(--maxw-prose);
+  font-size: var(--fs-sm);
   line-height: var(--lh-body);
+  color: var(--muted);
 }
 
 .home__pillar-tags {
   display: flex;
   flex-wrap: wrap;
   gap: 0.4rem;
-  margin-block-start: 1rem;
 }
 
-.home__cta {
-  margin-block-start: calc(var(--stack) * 1.25);
-}
-
-/* --- 4 · Work strip: draggable, full-bleed, DRAG chip follows cursor --- */
-
-.home__dragwrap {
-  position: relative;
-}
-
-.home__strip {
-  display: flex;
-  align-items: flex-start;
-  gap: clamp(1rem, 2.5vw, 2rem);
-  overflow-x: auto;
-
-  /* Full-bleed scroller whose first slide aligns with the container. */
-  padding-inline: max(var(--gutter), calc((100% - var(--maxw)) / 2 + var(--gutter)));
-  padding-block: 0.5rem 1rem;
-  cursor: grab;
-  user-select: none;
-  -webkit-user-select: none;
-  scrollbar-width: none;
-}
-
-.home__strip::-webkit-scrollbar {
-  display: none;
-}
-
-.home__strip.is-dragging {
-  cursor: grabbing;
-}
-
-.home__slide {
-  flex: 0 0 clamp(16rem, 38vw, 30rem);
-  min-width: 0;
-}
-
-/* Alternate top offsets for the scattered poster-wall look. */
-.home__slide--drop {
-  margin-block-start: 2.5rem;
-}
-
-/* Cursor-following DRAG chip. Transform is set from JS via ref;
-   only opacity transitions, so the follow never lags. */
-.home__dragchip {
-  position: absolute;
-  top: 0;
-  left: 0;
-  z-index: 2;
-  padding: 1.1em 1.5em;
-  border-radius: var(--r-pill);
-  background: var(--ink);
-  color: var(--paper);
-  font-size: var(--fs-sm);
-  pointer-events: none;
-  opacity: 0;
-  transform: translate3d(-9rem, -9rem, 0);
-  transition: opacity var(--dur-fast) var(--ease-out);
-  will-change: transform;
-}
-
-.home__dragchip.is-on {
-  opacity: 1;
-}
-
-.home__work-cta {
-  display: flex;
-  justify-content: center;
-  margin-block-start: var(--stack);
-}
-
-/* --- 5 · Clients line: one quiet mono marquee --- */
-
-.home__clientsline {
-  padding-block: calc(var(--section-y) / 3);
-}
-
-.home__client {
-  display: inline-flex;
-  align-items: center;
-  font-family: var(--font-mono);
-  font-size: var(--fs-md);
+.home__pillar-tag {
+  font-size: var(--fs-xs);
   font-weight: 500;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  white-space: nowrap;
+  padding: 0.55em 1em;
+}
+
+.home__pillar-more {
+  margin-block-start: auto;
+}
+
+/* --- 5 · Work list: full-width panels, stacked like a timeline --- */
+
+.home__work-title {
+  font-size: var(--fs-xl);
+}
+
+.home__work-sub {
+  margin-block-start: 0.75rem;
+  font-size: var(--fs-sm);
   color: var(--muted);
 }
 
-.home__client-sep {
-  margin-inline: 1.25rem;
-  color: var(--accent);
+.home__worklist {
+  display: grid;
+  gap: calc(var(--stack) * 1.6);
+  margin-block-start: calc(var(--stack) * 1.25);
 }
 
-/* --- Responsive --- */
+/* --- 6 · CTA panel: text left, warm holo strip right --- */
 
-@media (hover: none) {
-  .home__dragchip {
-    display: none;
-  }
+.home__cta {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.8fr);
+  gap: var(--stack);
+  align-items: stretch;
+  background: var(--black);
+  border: 1px solid var(--line);
+  padding: clamp(1.75rem, 4vw, 3rem);
 }
+
+.home__cta-text {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: clamp(1rem, 2.5vw, 1.5rem);
+}
+
+/* Kicker is centered in the light panel; left-aligned in the CTA. */
+.home__kicker--left {
+  text-align: start;
+}
+
+.home__cta-line {
+  font-size: var(--fs-lg);
+  max-width: 22ch;
+  text-wrap: balance;
+}
+
+.home__cta-strip {
+  min-height: 11rem;
+}
+
+/* --- Responsive (mobile overrides last) --- */
 
 @media (width < 48rem) {
   .home__reel {
@@ -320,19 +305,22 @@
     grid-template-columns: minmax(0, 1fr);
   }
 
-  .home__slide--drop {
-    margin-block-start: 1.5rem;
+  .home__cta {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .home__cta-strip {
+    min-height: 0;
+    aspect-ratio: 21 / 9;
   }
 }
 
 @media (width < 40rem) {
-  .hero__sticker--zepto {
+  .hero__badge {
     display: none;
   }
 
-  .hero__row {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0.5rem;
+  .home__band-word {
+    font-size: var(--fs-lg);
   }
 }

@@ -1,85 +1,69 @@
 /* ============================================================
-   Work — the bin as a poster wall. Five dark viewports on paper,
-   set in an editorial rhythm. Cards carry the signature move;
-   everything on this page stays quiet around them.
+   Work v3 ("Holo dark") — Morez's project list: centered header,
+   then the clients as full-width rounded panels in one calm
+   vertical stack. WorkCard owns each panel's chrome and scrub;
+   this file only sets the page rhythm around them.
 
-   Desktop rules first, mobile overrides later in the file so the
-   cascade wins cleanly. Tokens only — see src/styles/tokens.css.
+   Desktop rules first, mobile overrides last so the cascade wins.
+   Tokens only — see src/styles/tokens.css.
    ============================================================ */
 
 .work {
-  /* Clear the absolute ~4rem nav, then the page's own air. */
-  padding-block-start: calc(4rem + var(--section-y) * 0.6);
-  padding-block-end: var(--section-y);
+  /* Nav is a sticky in-flow bar, so plain section padding suffices. */
+  padding-block: calc(var(--section-y) * 0.6) var(--section-y);
 }
 
-/* --- Header --- */
+/* --- 1. Header: centered column --- */
 
-/* h1 left, tilted bin sticker right. wrap-reverse drops the sticker
-   to the row above the title when the row runs out of width. */
-.work__masthead {
-  display: flex;
-  flex-wrap: wrap-reverse;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: 1.25rem 2rem;
+.work__header {
+  text-align: center;
+}
+
+.work__kicker {
+  font-size: var(--fs-sm);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
 }
 
 .work__title {
   font-size: var(--fs-hero);
+  margin-block-start: 0.9rem;
 }
 
-.work__sticker {
-  /* Lift off the h1 descender line. */
-  margin-block-end: 0.75rem;
-}
-
-.work__intro {
+.work__sub {
   max-width: var(--maxw-prose);
+  margin-inline: auto;
   margin-block-start: 1.25rem;
   color: var(--muted);
 }
 
 .work__count {
   margin-block-start: var(--stack);
-  padding-block-start: 0.75rem;
-  border-block-start: 1px solid var(--line);
+  font-size: var(--fs-sm);
+  letter-spacing: 0.08em;
+  color: var(--muted);
 }
 
-/* --- The grid: 6 columns, poster rhythm [4|2] / [3|3] / [·4·] --- */
+/* The ✳ separator picks up the holo pink — one spark of colour. */
+.work__star {
+  color: var(--holo-a);
+}
 
-.work__grid {
-  display: grid;
-  grid-template-columns: repeat(6, 1fr);
-  gap: var(--stack) 1.25rem;
-  margin-block-start: var(--stack);
+/* --- 2. The list: full-width panels, stacked --- */
+
+.work__list {
+  margin-block-start: calc(var(--section-y) * 0.5);
+}
+
+.work__stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--stack);
 }
 
 .work__cell {
   min-width: 0;
-}
-
-/* Zepto — the 100+ body of work — takes the hero slot. */
-.work__cell--1 {
-  grid-column: span 4;
-}
-
-.work__cell--2 {
-  grid-column: span 2;
-  margin-block-start: 3rem;
-}
-
-.work__cell--3 {
-  grid-column: span 3;
-}
-
-.work__cell--4 {
-  grid-column: span 3;
-  margin-block-start: 3rem;
-}
-
-.work__cell--5 {
-  grid-column: 2 / span 4;
 }
 
 /* Reveal cascade: stagger set inline per cell as --work-delay.
@@ -91,79 +75,40 @@
   }
 }
 
-/* --- Outro: one hairline-topped line + two pills.
-       The footer owns the big CTA; this stays small. --- */
+/* --- 3. Outro: one bordered dark panel, kept compact.
+       The footer owns the big CTA. --- */
 
 .work__outro {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem 2.5rem;
-  margin-block-start: calc(var(--section-y) * 0.6);
-  border-block-start: 1px solid var(--line);
-  padding-block-start: var(--stack);
+  margin-block-start: calc(var(--section-y) * 0.8);
+}
+
+.work__outro-panel {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  padding: clamp(2.5rem, 6vw, 4.5rem) var(--gutter);
+  text-align: center;
 }
 
 .work__outro-line {
+  font-size: var(--fs-lg);
   max-width: var(--maxw-prose);
-  font-size: var(--fs-md);
-  line-height: var(--lh-snug);
+  margin-inline: auto;
+  margin-block-start: 1rem;
 }
 
 .work__outro-actions {
   display: flex;
   flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
   gap: 0.75rem;
+  margin-block-start: var(--stack);
 }
 
 /* --- Mobile overrides (kept last so the cascade wins) --- */
 
-/* Tablet: two columns, hero full width, offsets released. */
-@media (max-width: 56rem) {
-  .work__grid {
-    grid-template-columns: repeat(2, 1fr);
-    column-gap: 1rem;
-  }
-
-  .work__cell--1 {
-    grid-column: span 2;
-  }
-
-  .work__cell--2 {
-    grid-column: span 1;
-    margin-block-start: 0;
-  }
-
-  .work__cell--3 {
-    grid-column: span 1;
-  }
-
-  .work__cell--4 {
-    grid-column: span 1;
-    margin-block-start: 0;
-  }
-
-  .work__cell--5 {
-    grid-column: span 1;
-  }
-}
-
-/* Phone: single column, even rhythm, no offsets. */
 @media (max-width: 40rem) {
-  .work__grid {
-    grid-template-columns: 1fr;
-  }
-
-  .work__cell--1,
-  .work__cell--2,
-  .work__cell--3,
-  .work__cell--4,
-  .work__cell--5 {
-    grid-column: auto;
-  }
-
-  .work__sticker {
-    margin-block-end: 0;
+  .work__outro-panel {
+    padding: 2rem 1.25rem;
   }
 }

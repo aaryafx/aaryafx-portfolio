@@ -4,9 +4,10 @@ import { useReveal } from '../hooks/useReveal.js'
 import './work.css'
 
 /**
- * Work — the project bin on the poster wall. Five dark viewports punched
- * into the paper, laid out in an editorial poster rhythm. Hover (or arrow
- * keys, when focused) scrubs each one — WorkCard owns that interaction.
+ * Work — Morez's project list in an editor's hands. A centered header,
+ * then the clients as full-width rounded panels stacked in a calm
+ * vertical rhythm. Each panel hover-scrubs (or arrow-keys, when
+ * focused) — WorkCard owns that interaction and its own info row.
  */
 export default function Work() {
   useReveal()
@@ -16,51 +17,72 @@ export default function Work() {
 
   return (
     <div className="work">
-      <div className="container">
-        <header className="work__header reveal">
-          <div className="work__masthead">
-            <h1 className="display work__title">Selected work</h1>
-            <span className="sticker work__sticker" style={{ '--tilt': '2.5deg' }}>
-              Bin — {work.length} clips
-            </span>
-          </div>
+      {/* 1 — header */}
+      <header className="work__header container reveal">
+        <p className="work__kicker">What we made together</p>
+        <h1 className="head work__title">
+          Selected <span className="underline-marker">work</span>
+        </h1>
+        <p className="work__sub">
+          Five clients across quick commerce, sport, retail, real estate and entertainment —
+          shot and cut over five years.{' '}
+          <strong className="mono-strong">Hover any panel to scrub it.</strong>
+        </p>
+        <p className="work__count">
+          {count} projects{' '}
+          <span className="work__star" aria-hidden="true">
+            ✳
+          </span>{' '}
+          2022–2026
+        </p>
+      </header>
 
-          <p className="work__intro">
-            Five clients across quick commerce, sport, retail, real estate and entertainment
-            — shot and cut over five years. Full films go out on request.
-          </p>
-
-          <p className="meta work__count">
-            {count} projects · 2022–2026 · hover or arrow keys to scrub
-          </p>
-        </header>
-
-        <ul className="work__grid">
+      {/* 2 — the list: full-width panels, one after another */}
+      <section className="work__list container">
+        <h2 className="sr-only">Projects</h2>
+        <ul className="work__stack">
           {work.map((item, i) => (
             <li
               key={item.id}
-              className={`work__cell work__cell--${i + 1} reveal`}
+              className="work__cell reveal"
               style={{ '--work-delay': `${i * 90}ms` }}
             >
               <WorkCard item={item} index={i} />
             </li>
           ))}
         </ul>
+      </section>
 
-        <aside className="work__outro reveal">
-          <p className="work__outro-line">Full cuts and case breakdowns on request.</p>
+      {/* 3 — outro. The footer owns the big CTA; this stays compact. */}
+      <section className="work__outro container reveal">
+        <div className="panel work__outro-panel">
+          <p className="work__kicker">Want the full films?</p>
+          <h2 className="head work__outro-line">
+            Full cuts and case breakdowns go out on request.
+          </h2>
           <div className="work__outro-actions">
-            <a className="pill pill--solid" href={`mailto:${site.email}`}>
-              Email me<span className="pill__arrow" aria-hidden="true">↗</span>
+            <a className="pill pill--gradient" href={`mailto:${site.email}`}>
+              Email me
+              <span className="pill__arrow" aria-hidden="true">
+                ↗
+              </span>
             </a>
             {showreel && (
-              <a className="pill" href={showreel.href} target="_blank" rel="noreferrer">
-                Showreel<span className="pill__arrow" aria-hidden="true">↗</span>
+              <a
+                className="pill pill--outline"
+                href={showreel.href}
+                target="_blank"
+                rel="noreferrer"
+              >
+                Showreel
+                <span className="pill__arrow" aria-hidden="true">
+                  ↗
+                </span>
               </a>
             )}
           </div>
-        </aside>
-      </div>
+        </div>
+      </section>
     </div>
   )
 }

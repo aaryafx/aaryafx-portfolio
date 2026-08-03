@@ -1,389 +1,277 @@
 /* ============================================================
-   About — Pacôme's about, in daylight.
-   Giant sentence-case statement with inline chip tiles over a
-   faint grid, rotating showreel badge, two-column detail,
-   thumbnail marquee, CTA. All colours/durations from tokens;
-   duotone hues arrive per-thumb via inline custom props.
+   About — Holo dark.
+   Statement panel (holo--cool) with the inline-chip sentence and
+   rotating badge, two-column detail (mono prose + outlined rows),
+   client marquee band, facts strip, CTA. All colours and motion
+   from tokens; only structural values are scoped here.
    ============================================================ */
 
 .about {
   /* Component-scoped structural values (not palette, not motion tokens) */
-  --about-grid: 72px; /* hero grid cell */
-  --about-grid-line: color-mix(in srgb, var(--line) 55%, transparent);
-  --about-spin: 14s; /* badge rotation period (disabled under reduced motion) */
-  --about-badge-size: 8.75rem; /* 140px circle */
+  --about-chip-r: 8px; /* inline chip tile corner */
+  --about-rise: 22px; /* mount rise distance */
 }
 
-/* --- 1 · the statement ----------------------------------------- */
+/* --- 1 · statement panel ---------------------------------------- */
 
 .about__hero {
-  position: relative;
-  min-height: 100svh;
-  display: grid;
-  place-items: center;
-  /* Nav floats absolute over the top (~4rem); badge sits at the bottom. */
-  padding-block: var(--section-y) calc(var(--section-y) + 3rem);
-  padding-inline: var(--gutter);
+  padding-block: var(--gutter) var(--section-y);
 }
 
-/* The Pacôme grid, in daylight: two faint repeating hairline sets,
-   fading out toward the edges. */
-.about__hero::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  background-image:
-    repeating-linear-gradient(
-      to right,
-      var(--about-grid-line) 0 1px,
-      transparent 1px var(--about-grid)
-    ),
-    repeating-linear-gradient(
-      to bottom,
-      var(--about-grid-line) 0 1px,
-      transparent 1px var(--about-grid)
-    );
-  mask-image: radial-gradient(110% 90% at 50% 45%, var(--ink) 40%, transparent 95%);
-  -webkit-mask-image: radial-gradient(110% 90% at 50% 45%, var(--ink) 40%, transparent 95%);
-}
-
-/* The one display moment in sentence case — a spoken sentence,
-   not a poster line. */
-.about__statement {
-  position: relative;
-  font-family: var(--font-body);
-  font-size: clamp(var(--fs-lg), 4vw, var(--fs-xl));
-  font-weight: 600;
-  line-height: 1.25;
-  letter-spacing: -0.02em;
+.about__statementpanel {
+  min-height: 70svh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(2rem, 5vw, 3.25rem);
+  padding: clamp(3rem, 8vw, 6rem);
   text-align: center;
-  text-wrap: balance;
-  max-width: 26ch;
+}
+
+/* The one display moment: sentence case, ink on holo. */
+.about__statement {
+  max-width: 24ch;
   margin-inline: auto;
+  font-size: clamp(var(--fs-lg), 4.5vw, var(--fs-xl));
+  color: var(--ink);
+  text-wrap: balance;
 }
 
-/* Mount stagger group — inline so the sentence wraps naturally;
-   animated via relative `top`, which works on inline boxes. */
-.about__rise {
-  position: relative;
+/* .head sets --lh-tight per span; the sentence wraps on a roomier line. */
+.about__word {
+  line-height: var(--lh-snug);
 }
 
-/* Chip tiles sitting in the text line */
+/* Inline chip tiles sitting in the text line */
 .about__chip {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   width: 0.85em;
   height: 0.85em;
-  border-radius: calc(var(--r-sm) * 2);
-  vertical-align: -0.08em;
+  border-radius: var(--about-chip-r);
+  vertical-align: -0.12em;
 }
 
 .about__chip svg {
-  width: 62%;
-  height: 62%;
+  width: 60%;
+  height: 60%;
 }
 
 .about__chip--clapper {
   background: var(--ink);
-  color: var(--paper);
+  color: var(--white);
 }
 
 .about__chip--bolt {
-  background: var(--accent);
+  background: var(--white);
   color: var(--ink);
 }
 
 .about__chip--counter {
-  background: var(--teal);
-  color: var(--ink);
+  background: var(--ink);
+  color: var(--white);
 }
 
 .about__chip--burst {
-  background: var(--paper);
-  border: 1px solid var(--ink);
-  color: var(--accent);
+  background: var(--white);
+  color: var(--ink);
 }
 
 .about__chipnum {
   font-family: var(--font-mono);
-  font-size: 0.26em;
+  font-size: 0.24em;
   font-weight: 700;
   letter-spacing: -0.02em;
   line-height: 1;
 }
 
-/* Rotating circular showreel badge, bottom-left */
-.about__badge {
-  position: absolute;
-  bottom: var(--gutter);
-  left: var(--gutter);
-  width: var(--about-badge-size);
-  height: var(--about-badge-size);
-  border-radius: 50%;
+.about__chipstar {
+  font-size: 0.45em;
+  line-height: 1;
 }
 
-.about__badge svg {
-  width: 100%;
-  height: 100%;
+/* Rotating badge below the sentence; Badge draws in currentcolor. */
+.about__stamp {
+  color: var(--ink);
 }
 
-.about__badge-text {
-  font-family: var(--font-mono);
-  font-size: 0.72rem;
-  font-weight: 500;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  fill: var(--ink);
-}
-
-.about__badge-star {
-  font-size: 1.4rem;
-  fill: var(--accent);
-}
-
-.about__scrollcue {
-  position: absolute;
-  bottom: var(--gutter);
-  right: var(--gutter);
-}
-
-/* Mount animation: one orchestrated moment — the statement rises as
-   three groups, badge and scroll cue fade in after. Gated so the base
-   state above stays fully visible without motion or JS. */
+/* Mount rise — CSS-only, gated; base state above is fully visible. */
 @media (prefers-reduced-motion: no-preference) {
-  .about__rise {
+  .about__statement {
     animation: about-rise var(--dur-slow) var(--ease-out) backwards;
-    animation-delay: calc(var(--g, 0) * var(--dur-fast));
   }
 
-  .about__badge,
-  .about__scrollcue {
-    animation: about-fade var(--dur-slow) var(--ease-out) backwards;
-    animation-delay: calc(3 * var(--dur-fast));
-  }
-
-  .about__badge svg {
-    animation: about-spin var(--about-spin) linear infinite;
+  .about__stamp {
+    animation: about-rise var(--dur-slow) var(--ease-out) backwards;
+    animation-delay: calc(var(--dur-fast) * 2);
   }
 }
 
 @keyframes about-rise {
   from {
     opacity: 0;
-    top: 0.4em;
+    translate: 0 var(--about-rise);
   }
 }
 
-@keyframes about-fade {
-  from {
-    opacity: 0;
-  }
-}
-
-@keyframes about-spin {
-  to {
-    transform: rotate(1turn);
-  }
-}
-
-/* --- 2 · the detail -------------------------------------------- */
+/* --- 2 · the detail --------------------------------------------- */
 
 .about__detail {
-  padding-block: var(--section-y);
+  padding-block-end: var(--section-y);
 }
 
-.about__columns {
-  position: relative;
+.about__cols {
   display: grid;
   gap: var(--stack);
   align-items: start;
+}
+
+.about__kicker {
+  font-family: var(--font-mono);
+  font-size: var(--fs-sm);
+  font-weight: 500;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  margin-block-end: 1.5rem;
 }
 
 .about__prose {
   display: grid;
   gap: 1em;
   max-width: var(--maxw-prose);
+  color: var(--muted);
 }
 
-.about__aside {
+/* Outlined rows: labeled groups of pills, stacked. */
+.about__rows {
   display: grid;
-  gap: var(--stack);
+  gap: 0.75rem;
   align-content: start;
 }
 
-.about__label {
-  color: var(--ink);
+.about__row {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.9rem;
+  text-align: left;
+  transition: border-color var(--dur-fast) var(--ease-out);
 }
 
-.about__pills {
+.about__row:hover {
+  border-color: var(--white);
+}
+
+.about__rowlabel {
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  font-weight: 500;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+}
+
+.about__tags {
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem;
-  margin-block-start: 0.6rem;
 }
 
-/* One sticker for this page (2–3 max sitewide rule) */
-.about__sticker {
-  position: absolute;
-  top: calc(var(--stack) * -0.65);
-  right: 0.5rem;
-  z-index: 1;
+/* Value chips: quieter than button pills. */
+.about__tag {
+  padding: 0.55em 1em;
+  font-weight: 500;
 }
 
 @media (min-width: 48rem) {
-  .about__columns {
+  .about__cols {
     grid-template-columns: minmax(0, var(--maxw-prose)) minmax(0, 1fr);
     gap: calc(var(--stack) * 1.5);
   }
 }
 
-/* --- 3 · thumbnail marquee ------------------------------------- */
+/* --- 3 · client marquee ------------------------------------------ */
 
-.about__strip {
+.about__band {
   padding-block-end: var(--section-y);
 }
 
-/* Room below for the even-item vertical offset (marquee clips overflow) */
 .about__marquee {
-  padding-block: 0.25rem 1.5rem;
+  padding-block: 0.5rem;
 }
 
-/* Dark viewport thumbnail punched into the paper */
-.about__thumb {
-  position: relative;
-  display: block;
-  flex-shrink: 0;
-  width: clamp(14rem, 26vw, 22rem);
-  aspect-ratio: 16 / 9;
-  margin-inline-end: clamp(0.75rem, 2vw, 1.25rem);
-  border-radius: var(--r-lg);
-  overflow: hidden;
-  background: var(--screen);
+.about__mqname {
+  font-size: var(--fs-lg);
+  color: var(--white);
+  white-space: nowrap;
+  margin-inline: clamp(1rem, 2.5vw, 2rem);
 }
 
-/* Scattered-strip feel: every other thumbnail drops slightly */
-.about__thumb:nth-child(even) {
-  translate: 0 0.75rem;
-}
-
-/* Duotone placeholder grade — same recipe spirit as workcard.css
-   .workcard__framegfx; --h1/--h2 come from item.hues inline. */
-.about__thumbgfx {
-  position: absolute;
-  inset: -8% -14% -8% 0;
-  background:
-    radial-gradient(90% 120% at 68% 38%, var(--h2) 0%, transparent 58%),
-    radial-gradient(
-      120% 150% at 22% 78%,
-      color-mix(in oklab, var(--h2), var(--h1) 55%) 0%,
-      transparent 62%
-    ),
-    linear-gradient(155deg, var(--h1), color-mix(in oklab, var(--h1), var(--screen) 35%));
-  filter: saturate(0.92);
-}
-
-/* Bottom scrim so the client name reads over any hue pair */
-.about__thumb::after {
-  content: "";
-  position: absolute;
-  inset: auto 0 0 0;
-  height: 45%;
-  background: linear-gradient(
-    to top,
-    color-mix(in srgb, var(--screen) 60%, transparent),
-    transparent
-  );
-}
-
-.about__thumbclient {
-  position: absolute;
-  left: 0.9rem;
-  bottom: 0.75rem;
-  z-index: 1;
-  font-family: var(--font-mono);
-  font-size: var(--fs-xs);
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  color: var(--screen-ink);
-}
-
-.about__thumbchip {
-  position: absolute;
-  right: 0.75rem;
-  bottom: 0.75rem;
-  z-index: 1;
-  padding: 0.45em 0.8em;
-  border-radius: var(--r-pill);
-  background: var(--screen-ink);
-  color: var(--screen);
-  font-family: var(--font-mono);
-  font-size: var(--fs-xs);
-  font-weight: 500;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
+.about__mqstar {
+  color: var(--holo-a);
+  font-size: var(--fs-md);
   line-height: 1;
-  opacity: 0;
-  translate: 0 0.35rem;
-  transition:
-    opacity var(--dur-fast) var(--ease-out),
-    translate var(--dur-fast) var(--ease-out);
 }
 
-.about__thumb:hover .about__thumbchip {
-  opacity: 1;
-  translate: 0 0;
+/* --- 4 · facts strip --------------------------------------------- */
+
+.about__facts {
+  padding-block-end: var(--section-y);
 }
 
-/* Accessible twin of the strip: sr-only until a link is focused,
-   then it appears as a row of pills (skip-link pattern), so sighted
-   keyboard users see where focus went. */
-.about__srlist:focus-within {
-  position: static;
-  width: auto;
-  height: auto;
-  margin: 0;
-  padding: 1rem 0 0;
-  overflow: visible;
-  clip-path: none;
-  white-space: normal;
-  display: flex;
-  flex-wrap: wrap;
+.about__factgrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(0.75rem, 1.5vw, 1rem);
+}
+
+.about__fact {
+  display: grid;
   gap: 0.5rem;
+  justify-items: center;
+  padding: clamp(1.5rem, 3vw, 2.25rem) 1rem;
+  text-align: center;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: var(--r-card);
 }
 
-/* --- 4 · cta ---------------------------------------------------- */
+.about__factvalue {
+  font-size: var(--fs-lg);
+}
+
+.about__factlabel {
+  font-size: var(--fs-sm);
+  color: var(--muted);
+}
+
+@media (min-width: 48rem) {
+  .about__factgrid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+/* --- 5 · cta ------------------------------------------------------ */
 
 .about__cta {
+  display: grid;
+  justify-items: center;
+  gap: 1.75rem;
   padding-block-end: var(--section-y);
+  text-align: center;
 }
 
 .about__ctaline {
-  font-size: var(--fs-md);
-  font-weight: 500;
-  max-width: var(--maxw-prose);
-  margin-block-end: 1.25rem;
-  text-wrap: pretty;
+  max-width: 26ch;
+  font-size: var(--fs-lg);
+  text-wrap: balance;
 }
 
 .about__ctarow {
   display: flex;
   flex-wrap: wrap;
+  justify-content: center;
   gap: 0.75rem;
-}
-
-/* --- mobile overrides (last: no specificity fights) ------------- */
-
-@media (max-width: 48rem) {
-  .about__badge {
-    display: none;
-  }
-}
-
-@media (max-width: 40rem) {
-  .about__sticker {
-    display: none;
-  }
 }

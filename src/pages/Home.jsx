@@ -1,259 +1,199 @@
-import { useRef } from 'react'
 import { Link } from 'react-router-dom'
-import { site, about, pillars, work } from '../data/content.js'
+import { site, closing, pillars, work } from '../data/content.js'
 import Marquee from '../components/Marquee.jsx'
+import Badge from '../components/Badge.jsx'
 import WorkCard from '../components/WorkCard.jsx'
 import { useReveal } from '../hooks/useReveal.js'
 import './home.css'
 
 /**
- * Landing page — the poster wall.
- * 1 hero marquee wordmark · 2 showreel viewport · 3 about + pillars ·
- * 4 draggable work strip with cursor DRAG chip · 5 clients line.
- * App renders Nav (absolute over the hero) and Footer around this page.
+ * Landing page — Holo dark.
+ * 1 hero holo panel + scroll badge · 2 dual marquee band · 3 showreel panel
+ * · 4 services light flip · 5 stacked work list · 6 CTA panel.
+ * App renders the sticky Nav and Footer around this page.
  */
+
+/** Wrap one target word of a copy string in a marker accent span. */
+function markWord(text, word, cls) {
+  const i = text.indexOf(word)
+  if (i === -1) return text
+  return (
+    <>
+      {text.slice(0, i)}
+      <span className={cls}>{word}</span>
+      {text.slice(i + word.length)}
+    </>
+  )
+}
+
 export default function Home() {
   useReveal()
 
-  const wrapRef = useRef(null)
-  const stripRef = useRef(null)
-  const chipRef = useRef(null)
-  const drag = useRef({ down: false, x: 0, left: 0 })
-
-  const roleShort = site.role.split(' & ')[0] // "Video editor"
   const city = site.location.split(',')[0] // "Ahmedabad"
+  const estYear = site.est.split(' ')[1] // "2021"
 
-  /* --- Work strip: mouse drag-to-scroll. Touch and wheel scroll natively;
-     pointer capture keeps the drag alive when the cursor leaves the strip.
-     React removes these handlers with the element, so nothing leaks. --- */
-
-  const onStripPointerDown = (e) => {
-    if (e.pointerType !== 'mouse') return
-    const strip = stripRef.current
-    drag.current = { down: true, x: e.clientX, left: strip.scrollLeft }
-    strip.setPointerCapture(e.pointerId)
-    strip.classList.add('is-dragging')
-  }
-
-  const onStripPointerMove = (e) => {
-    if (!drag.current.down) return
-    stripRef.current.scrollLeft = drag.current.left - (e.clientX - drag.current.x)
-  }
-
-  const onStripPointerEnd = (e) => {
-    if (!drag.current.down) return
-    drag.current.down = false
-    const strip = stripRef.current
-    strip.classList.remove('is-dragging')
-    if (strip.hasPointerCapture(e.pointerId)) strip.releasePointerCapture(e.pointerId)
-  }
-
-  const onStripKeyDown = (e) => {
-    // Only when the strip itself is focused — cards use arrows to scrub.
-    if (e.target !== e.currentTarget) return
-    if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return
-    e.preventDefault()
-    stripRef.current.scrollBy({ left: e.key === 'ArrowRight' ? 320 : -320 })
-  }
-
-  /* --- Cursor-following DRAG chip: direct style mutation via ref,
-     no re-render per move. Hidden on touch devices in CSS. --- */
-
-  const onWrapPointerMove = (e) => {
-    const chip = chipRef.current
-    if (!chip || e.pointerType !== 'mouse') return
-    const rect = wrapRef.current.getBoundingClientRect()
-    chip.style.transform = `translate3d(${e.clientX - rect.left}px, ${e.clientY - rect.top}px, 0) translate(-50%, -50%)`
-  }
-
-  const onWrapPointerEnter = (e) => {
-    if (e.pointerType === 'mouse') chipRef.current?.classList.add('is-on')
-  }
-
-  const onWrapPointerLeave = () => {
-    chipRef.current?.classList.remove('is-on')
-  }
-
-  const wordmark = (
-    <span className="hero__word display">
+  /* One repeating unit of the name band: "AARYAFX ✳ AARYAFX ✚" */
+  const bandUnit = (
+    <span className="head home__band-word">
       {site.brand}
-      <span className="hero__reg">®</span>
-      <span className="hero__sep">—</span>
-      {roleShort}
-      <span className="hero__sep">—</span>
+      <span className="home__band-sep">✳</span>
+      {site.brand}
+      <span className="home__band-sep">✚</span>
     </span>
   )
 
   return (
     <>
-      {/* ---- 1 · HERO ---- */}
-      <section className="hero" aria-label="Intro">
-        <h1 className="sr-only">
-          {site.brand} — {site.role.toLowerCase()}, {city}
-        </h1>
-
-        <div className="hero__band">
-          <div className="hero__mq" aria-hidden="true">
-            <Marquee duration={30}>
-              {wordmark}
-              {wordmark}
-            </Marquee>
+      {/* ---- 1 · HERO PANEL ---- */}
+      <section className="hero" aria-labelledby="hero-h">
+        <div className="container">
+          <div className="panel holo hero__panel">
+            <h1 className="head hero__title" id="hero-h">
+              {markWord(site.role, 'editor', 'underline-marker')}
+            </h1>
+            <p className="hero__intro">
+              {site.brand} is Aarya Patel —{' '}
+              <span className="mono-strong hero__strong">video editor based in {city}</span>{' '}
+              since {estYear}. Five years of fast cuts,{' '}
+              <span className="mono-strong hero__strong">100+ videos for Zepto</span>, and
+              brand work from cricket to retail.
+            </p>
           </div>
 
-          <span
-            className="sticker sticker--accent hero__sticker hero__sticker--rec"
-            style={{ '--tilt': '5deg' }}
-            aria-hidden="true"
-          >
-            <span className="recdot" />
-            REC
-          </span>
-          <span
-            className="sticker hero__sticker hero__sticker--zepto"
-            style={{ '--tilt': '-3.5deg' }}
-            aria-hidden="true"
-          >
-            100+ cuts for Zepto
-          </span>
-        </div>
-
-        <div className="container hero__row">
-          <p className="hero__role">
-            {site.role} — {site.location} · {site.years} years
-          </p>
-          <p className="meta" aria-hidden="true">
-            (Scroll)
-          </p>
+          {/* Scroll cue straddling the panel's bottom edge */}
+          <div className="hero__badge">
+            <a className="hero__badge-link" href="#reel">
+              <Badge text="Scroll — need an editor ?" size={150} />
+              <span className="sr-only">Scroll to the showreel</span>
+            </a>
+          </div>
         </div>
       </section>
 
-      {/* ---- 2 · SHOWREEL ---- */}
-      {/* Placeholder viewport: a real video slots in here later. */}
-      <section className="home__section reveal" aria-labelledby="home-reel-h">
+      {/* ---- 2 · DUAL MARQUEE BAND ---- */}
+      <section className="home__band reveal">
+        <h2 className="sr-only">{site.brand}</h2>
+        <div className="home__band-rows" aria-hidden="true">
+          <Marquee duration={30}>
+            {bandUnit}
+            {bandUnit}
+            {bandUnit}
+          </Marquee>
+          <Marquee duration={34} reverse>
+            {bandUnit}
+            {bandUnit}
+            {bandUnit}
+          </Marquee>
+        </div>
+      </section>
+
+      {/* ---- 3 · SHOWREEL PANEL ---- */}
+      {/* Placeholder viewport: the real reel slots in here later. */}
+      <section className="home__section reveal" id="reel" aria-labelledby="home-reel-h">
+        <h2 className="sr-only" id="home-reel-h">
+          Showreel
+        </h2>
         <div className="container">
-          <div className="home__reel">
-            <p className="home__reel-slate meta" aria-hidden="true">
-              ▶ {site.brand} — Showreel
+          <div className="panel home__reel">
+            <p className="home__reel-slate" aria-hidden="true">
+              ▶ {site.brand} — showreel
             </p>
             <div className="home__reel-center">
-              <h2 className="home__reel-title display" id="home-reel-h">
+              <p className="scratch home__reel-title" aria-hidden="true">
                 Showreel
-              </h2>
-              <p className="meta">©2026 — Full reel on request</p>
-              <a className="pill home__reel-pill" href={`mailto:${site.email}?subject=Showreel%20request`}>
+              </p>
+              <p className="home__reel-note">©2026 — full reel on request</p>
+              <a
+                className="pill pill--gradient"
+                href={`mailto:${site.email}?subject=Showreel%20request`}
+              >
                 Request the reel
-                <span className="pill__arrow" aria-hidden="true">↗</span>
+                <span className="pill__arrow" aria-hidden="true">
+                  →
+                </span>
               </a>
             </div>
           </div>
         </div>
       </section>
 
-      {/* ---- 3 · ABOUT TEASER ---- */}
-      <section className="home__section reveal" aria-labelledby="home-about-h">
+      {/* ---- 4 · SERVICES — THE LIGHT FLIP ---- */}
+      <section className="home__section reveal" aria-labelledby="home-services-h">
         <div className="container">
-          <div className="eyebrow">
-            <h2 className="meta" id="home-about-h">
-              About
+          <div className="panel home__light">
+            <p className="home__kicker">What I do, à la carte</p>
+            <h2 className="head home__light-title" id="home-services-h">
+              Three ways to <span className="highlight-marker">use</span> me
             </h2>
-            <span className="eyebrow__rule" aria-hidden="true" />
-            <p className="meta meta--accent">
-              {site.est} · {city}
-            </p>
+
+            <div className="home__pillars">
+              {pillars.map((p) => (
+                <article className="home__pillar" key={p.num}>
+                  <p className="home__pillar-num" aria-hidden="true">
+                    {p.num}
+                  </p>
+                  <h3 className="head home__pillar-name">{p.name}</h3>
+                  <p className="home__pillar-line">{p.line}</p>
+                  <p className="home__pillar-body">{p.body}</p>
+                  <ul className="home__pillar-tags" aria-label={`${p.name} — services`}>
+                    {p.tags.map((t) => (
+                      <li key={t}>
+                        <span className="pill pill--outline home__pillar-tag">{t}</span>
+                      </li>
+                    ))}
+                  </ul>
+                  <Link
+                    className="pill home__pillar-more"
+                    to="/about"
+                    aria-label={`More about ${p.name.toLowerCase()}`}
+                  >
+                    More
+                    <span className="pill__arrow" aria-hidden="true">
+                      →
+                    </span>
+                  </Link>
+                </article>
+              ))}
+            </div>
           </div>
-
-          <p className="home__lede">{about.lede}</p>
-
-          <div className="home__pillars">
-            {pillars.map((p) => (
-              <article className="home__pillar" key={p.num}>
-                <p className="home__pillar-num" aria-hidden="true">
-                  {p.num}
-                </p>
-                <h3 className="home__pillar-name display">{p.name}</h3>
-                <p className="home__pillar-line">{p.line}</p>
-                <p className="home__pillar-body">{p.body}</p>
-                <ul className="home__pillar-tags" aria-label={`${p.name} — services`}>
-                  {p.tags.map((t) => (
-                    <li key={t}>
-                      <span className="pill pill--tag">{t}</span>
-                    </li>
-                  ))}
-                </ul>
-              </article>
-            ))}
-          </div>
-
-          <Link to="/about" className="pill home__cta">
-            More about Aarya
-            <span className="pill__arrow" aria-hidden="true">↗</span>
-          </Link>
         </div>
       </section>
 
-      {/* ---- 4 · WORK TEASER ---- */}
+      {/* ---- 5 · WORK LIST ---- */}
       <section className="home__section reveal" aria-labelledby="home-work-h">
         <div className="container">
-          <div className="eyebrow">
-            <h2 className="meta" id="home-work-h">
-              Selected work
-            </h2>
-            <span className="eyebrow__rule" aria-hidden="true" />
-            <p className="meta meta--accent" aria-hidden="true">
-              Drag
-            </p>
-          </div>
-        </div>
+          <h2 className="head home__work-title" id="home-work-h">
+            Selected work
+          </h2>
+          <p className="home__work-sub">Hover to scrub — like a real edit bay.</p>
 
-        <div
-          className="home__dragwrap"
-          ref={wrapRef}
-          onPointerMove={onWrapPointerMove}
-          onPointerEnter={onWrapPointerEnter}
-          onPointerLeave={onWrapPointerLeave}
-        >
-          <div
-            className="home__strip"
-            ref={stripRef}
-            role="region"
-            aria-label="Selected work. Scrolls horizontally — arrow keys also scroll."
-            tabIndex={0}
-            onPointerDown={onStripPointerDown}
-            onPointerMove={onStripPointerMove}
-            onPointerUp={onStripPointerEnd}
-            onPointerCancel={onStripPointerEnd}
-            onKeyDown={onStripKeyDown}
-          >
+          <div className="home__worklist">
             {work.map((item, i) => (
-              <div className={'home__slide' + (i % 2 ? ' home__slide--drop' : '')} key={item.id}>
-                <WorkCard item={item} index={i} />
-              </div>
+              <WorkCard item={item} index={i} key={item.id} />
             ))}
           </div>
-
-          <span className="home__dragchip display" ref={chipRef} aria-hidden="true">
-            Drag
-          </span>
-        </div>
-
-        <div className="container home__work-cta">
-          <Link to="/work" className="pill">
-            All work
-            <span className="pill__arrow" aria-hidden="true">↗</span>
-          </Link>
         </div>
       </section>
 
-      {/* ---- 5 · CLIENTS LINE ---- */}
-      <section className="home__section home__clientsline reveal" aria-label="Clients">
-        <Marquee duration={18} reverse>
-          {work.map((w) => (
-            <span className="home__client" key={w.id}>
-              {w.client}
-              <span className="home__client-sep" aria-hidden="true">✲</span>
-            </span>
-          ))}
-        </Marquee>
+      {/* ---- 6 · CTA PANEL ---- */}
+      <section className="home__section reveal" aria-labelledby="home-cta-h">
+        <div className="container">
+          <div className="panel home__cta">
+            <div className="home__cta-text">
+              <p className="home__kicker home__kicker--left">{closing.kicker}</p>
+              <h2 className="head home__cta-line" id="home-cta-h">
+                {markWord(closing.line, 'scroll', 'underline-marker')}
+              </h2>
+              <a className="pill pill--gradient" href={`mailto:${site.email}`}>
+                {closing.cta}
+                <span className="pill__arrow" aria-hidden="true">
+                  →
+                </span>
+              </a>
+            </div>
+            <div className="panel holo--warm home__cta-strip" aria-hidden="true" />
+          </div>
+        </div>
       </section>
     </>
   )
