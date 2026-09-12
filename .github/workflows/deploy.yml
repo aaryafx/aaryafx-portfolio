@@ -15,33 +15,30 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 20
-
-      - run: npm ci
-
-      - run: npm run build
-
-      # GitHub Pages serves 404.html for unknown paths. Making it a copy of
-      # index.html lets the SPA boot and resolve /about and /work itself.
-      - run: cp dist/index.html dist/404.html
-
-      - uses: actions/upload-pages-artifact@v3
-        with:
-          path: dist
-
   deploy:
-    needs: build
     runs-on: ubuntu-latest
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
+      - uses: actions/checkout@v4
+
+      # Static site: no build step. Collect the files the site actually needs
+      # so the old Vite app in src/ is not published alongside it.
+      - name: Assemble site
+        run: |
+          mkdir -p _site
+          cp index.html about.html longform.html reels.html brands.html _site/
+          cp style.css script.js _site/
+          cp showreel.mp4 _site/
+          # tell Pages not to run these through Jekyll
+          touch _site/.nojekyll
+
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
       - id: deployment
         uses: actions/deploy-pages@v4

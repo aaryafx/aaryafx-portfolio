@@ -1,0 +1,686 @@
+/* ==========================================================================
+   AaryaFx - single-screen type poster
+   One viewport, no scroll. Heavy grotesque slab, cream ground, red accent.
+   ========================================================================== */
+
+:root {
+  --paper:  #fafaf7;
+  --ink:    #171717;
+  --red:    #e8371f;
+  --muted:  rgba(23, 23, 23, 0.55);
+  --hair:   rgba(23, 23, 23, 0.16);
+
+  --ease:   cubic-bezier(0.16, 1, 0.3, 1);
+  --pad:    clamp(1rem, 3vw, 2.25rem);
+}
+
+:root[data-theme="dark"] {
+  --paper:  #121211;
+  --ink:    #f2f1ec;
+  --red:    #ff5236;
+  --muted:  rgba(242, 241, 236, 0.55);
+  --hair:   rgba(242, 241, 236, 0.18);
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html, body { height: 100%; }
+
+body.is-poster { overflow: hidden; }   /* only the landing poster locks scroll */
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: 'Archivo', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  transition: background 0.4s var(--ease), color 0.4s var(--ease);
+}
+
+a { color: inherit; text-decoration: none; }
+:focus-visible { outline: 2px solid var(--red); outline-offset: 4px; }
+
+/* The whole page is one viewport-tall grid: bar / stage / footer */
+.poster {
+  height: 100dvh;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  padding: var(--pad);
+  gap: clamp(0.5rem, 2vh, 1.5rem);
+}
+
+/* --------------------------------------------------------------------------
+   TOP BAR
+   -------------------------------------------------------------------------- */
+.topbar {
+  display: flex; align-items: flex-start; justify-content: space-between;
+  gap: 1rem;
+}
+
+.nav {
+  display: flex; flex-wrap: wrap;
+  gap: clamp(0.75rem, 2vw, 1.75rem);
+  font-size: clamp(0.8125rem, 1.05vw, 0.9375rem);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+.nav a { position: relative; padding-block: 2px; }
+.nav a::after {
+  content: ""; position: absolute; left: 0; bottom: 0;
+  width: 100%; height: 1.5px; background: currentColor;
+  transform: scaleX(0); transform-origin: left;
+  transition: transform 0.35s var(--ease);
+}
+.nav a:hover::after { transform: scaleX(1); }
+.nav__cta { color: var(--red); }
+
+.theme {
+  flex: 0 0 auto;
+  display: grid; place-items: center;
+  width: 34px; height: 34px; padding: 0;
+  background: none; border: 1.5px solid var(--hair); border-radius: 50%;
+  color: var(--ink); cursor: pointer;
+  transition: border-color 0.3s var(--ease), transform 0.3s var(--ease);
+}
+.theme:hover { border-color: var(--ink); transform: rotate(25deg); }
+.theme svg { width: 17px; height: 17px; }
+.theme__moon { display: none; }
+:root[data-theme="dark"] .theme__sun  { display: none; }
+:root[data-theme="dark"] .theme__moon { display: block; }
+
+/* --------------------------------------------------------------------------
+   STAGE - the type slab plus the signature laid over it
+   -------------------------------------------------------------------------- */
+.stage {
+  position: relative;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  min-height: 0;                    /* let the 1fr row actually shrink */
+}
+
+.display {
+  margin: 0;
+  display: flex; flex-direction: column; align-items: center;
+  font-weight: 800;
+  /* no-JS fallback only - script.js measures and sets the real size */
+  font-size: min(17vw, 17vh);
+  line-height: 0.92;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+}
+.line { display: block; white-space: nowrap; }
+
+/* One span per character, produced by script.js */
+.ch {
+  display: inline-block;
+  will-change: transform;
+  transition: transform 0.45s var(--ease), color 0.45s var(--ease);
+}
+.ch:hover { color: var(--red); transform: translateY(-0.06em) rotate(-4deg); }
+
+/* Entrance: each letter rises into place, staggered by --i */
+.js .ch {
+  opacity: 0;
+  transform: translateY(0.42em);
+  animation: chIn 0.72s var(--ease) forwards;
+  animation-delay: calc(var(--i, 0) * 28ms);
+}
+@keyframes chIn { to { opacity: 1; transform: translateY(0); } }
+
+/* Red script signature across the middle of the slab */
+.signature {
+  position: absolute;
+  left: 50%; top: 50%;
+  font-family: 'Great Vibes', 'Segoe Script', cursive;
+  font-size: min(16vw, 18vh);
+  line-height: 1;
+  color: var(--red);
+  white-space: nowrap;
+  pointer-events: none;
+  transform: translate(-50%, -50%) rotate(-7deg);
+  opacity: 0;
+  animation: sigIn 0.9s var(--ease) 0.5s forwards;
+}
+@keyframes sigIn {
+  from { opacity: 0; transform: translate(-50%, -46%) rotate(-7deg) scale(0.94); }
+  to   { opacity: 1; transform: translate(-50%, -50%) rotate(-7deg) scale(1); }
+}
+
+.marks {
+  position: absolute; bottom: 0; left: 50%;
+  transform: translateX(-50%);
+  display: flex; gap: clamp(0.6rem, 2vw, 1.4rem);
+  font-size: clamp(0.9rem, 2vw, 1.5rem);
+  color: var(--ink);
+}
+
+/* --------------------------------------------------------------------------
+   FOOTER LINE
+   -------------------------------------------------------------------------- */
+.footerline {
+  display: flex; justify-content: space-between; gap: 1rem;
+  padding-top: 0.6rem; border-top: 1px solid var(--hair);
+  font-size: clamp(0.6875rem, 1vw, 0.8125rem);
+  font-weight: 500; letter-spacing: 0.04em; text-transform: uppercase;
+  color: var(--muted);
+}
+
+@media (max-width: 560px) {
+  .footerline span:last-child { display: none; }
+  .nav { gap: 0.7rem; font-size: 0.75rem; }
+}
+
+/* --------------------------------------------------------------------------
+   REDUCED MOTION
+   -------------------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-delay: 0ms !important;
+    transition-duration: 0.001ms !important;
+  }
+  .js .ch { opacity: 1; transform: none; }
+  .signature { opacity: 1; transform: translate(-50%, -50%) rotate(-7deg); }
+  .ch:hover { transform: none; }
+  .theme:hover { transform: none; }
+}
+
+
+/* ==========================================================================
+   SUBPAGES - zine / scrapbook register
+   Typewriter headings, mono body, handwriting accents, coloured paper.
+   ========================================================================== */
+
+:root {
+  /* coloured paper stock used by folders, spines and reel cards */
+  --p1: #e8552f;
+  --p2: #efb93f;
+  --p3: #6d9160;
+  --p4: #47679c;
+  --p5: #d98cae;
+  --p6: #8a6cb0;
+  --p7: #2f6f6a;
+  --p8: #c4452f;
+
+  /* soft tints for the tab pills */
+  --t1: #f7f3ea;
+  --t2: #eef1ec;
+  --t3: #e6ead6;
+  --t4: #f2e7e4;
+
+  --mono:   'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+  --type:   'Special Elite', 'Courier New', monospace;
+  --hand:   'Caveat', 'Segoe Script', cursive;
+  --script: 'Great Vibes', cursive;
+}
+
+:root[data-theme="dark"] {
+  --t1: #23231f; --t2: #202521; --t3: #242719; --t4: #2a2220;
+}
+
+/* ---------- shared subpage chrome ---------- */
+.site {
+  min-height: 100dvh;
+  display: flex; flex-direction: column;
+  padding: clamp(0.9rem, 2.5vw, 1.75rem);
+}
+
+.subbar {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 1rem;
+}
+.mark {
+  font-family: var(--script);
+  font-size: clamp(1.4rem, 3vw, 2rem);
+  line-height: 1; color: var(--ink);
+}
+
+.subnav {
+  display: flex; flex-wrap: wrap; justify-content: center;
+  gap: clamp(0.7rem, 2vw, 1.6rem);
+  margin: clamp(1rem, 3vh, 2rem) 0 clamp(1.25rem, 4vh, 2.5rem);
+  font-family: 'Archivo', sans-serif;
+  font-size: clamp(0.78rem, 1vw, 0.9rem); font-weight: 600;
+}
+.subnav a { position: relative; padding-block: 2px; }
+.subnav a::after {
+  content: ""; position: absolute; left: 0; bottom: 0;
+  width: 100%; height: 1.5px; background: currentColor;
+  transform: scaleX(0); transform-origin: left;
+  transition: transform 0.35s var(--ease);
+}
+.subnav a:hover::after,
+.subnav a[aria-current="page"]::after { transform: scaleX(1); }
+.subnav a[aria-current="page"] { color: var(--red); }
+.subnav .cta { color: var(--red); }
+
+.pagebody { flex: 1; width: 100%; max-width: 1100px; margin-inline: auto; }
+
+.pagehead {
+  font-family: var(--type);
+  font-size: clamp(1.5rem, 4vw, 2.6rem);
+  font-weight: 400; letter-spacing: -0.01em; margin: 0 0 0.35em;
+}
+.pagenote {
+  font-family: var(--hand);
+  font-size: clamp(1.05rem, 2vw, 1.5rem);
+  color: var(--red); margin: 0 0 2rem;
+}
+
+.sitefoot {
+  margin-top: clamp(2rem, 6vh, 4rem);
+  padding-top: 0.7rem; border-top: 1px solid var(--hair);
+  display: flex; justify-content: space-between; gap: 1rem;
+  font-family: 'Archivo', sans-serif;
+  font-size: 0.7rem; font-weight: 500;
+  letter-spacing: 0.05em; text-transform: uppercase; color: var(--muted);
+}
+
+/* ==========================================================================
+   ABOUT - tabbed zine panels inside a stamp frame
+   ========================================================================== */
+.frame {
+  border: 2px dashed var(--hair);
+  border-radius: 10px;
+  padding: clamp(1rem, 3vw, 2.25rem);
+}
+
+.photostrip {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  gap: clamp(0.6rem, 2vw, 1.1rem);
+  margin-bottom: clamp(1.25rem, 3vw, 2rem);
+}
+/* Deliberate empty slots: drop your own photos in, no stock filler. */
+.photoslot {
+  aspect-ratio: 4 / 5;
+  border: 1px solid var(--hair);
+  border-radius: 4px;
+  background: var(--t1);
+  display: grid; place-items: center;
+  font-family: var(--mono); font-size: 0.65rem;
+  color: var(--muted); text-align: center; padding: 0.5rem;
+  transform: rotate(var(--rot, 0deg));
+}
+.photoslot:nth-child(2) { --rot: 1.2deg; }
+.photoslot:nth-child(3) { --rot: -1.4deg; }
+
+.tabs {
+  display: grid; grid-template-columns: repeat(2, 1fr);
+  gap: clamp(0.5rem, 1.5vw, 0.85rem);
+  margin-bottom: clamp(1.1rem, 3vw, 1.75rem);
+}
+.tab {
+  font-family: var(--type); font-size: clamp(0.72rem, 1.4vw, 0.92rem);
+  text-align: center; padding: 0.85rem 0.6rem;
+  border: 1px solid var(--hair); border-radius: 8px;
+  background: var(--t1); color: var(--ink);
+  cursor: pointer;
+  transition: transform 0.25s var(--ease), background 0.25s var(--ease),
+              color 0.25s var(--ease);
+}
+.tab:nth-child(2) { background: var(--t2); }
+.tab:nth-child(3) { background: var(--t3); }
+.tab:nth-child(4) { background: var(--t4); }
+.tab:hover { transform: translateY(-2px); }
+.tab[aria-selected="true"] { background: var(--red); color: #f7f0e4; border-color: transparent; }
+
+.panel[hidden] { display: none; }
+.panel h2 {
+  font-family: var(--type); font-weight: 400;
+  font-size: clamp(1.1rem, 2.4vw, 1.5rem); margin: 0 0 1rem;
+}
+.panel p, .panel li {
+  font-family: var(--mono); font-size: clamp(0.8rem, 1.4vw, 0.9rem);
+  line-height: 1.75; color: var(--ink); max-width: 66ch;
+}
+.panel p { margin: 0 0 1rem; }
+.panel ul { margin: 0; padding: 0; list-style: none; }
+.panel li { padding: 0.45rem 0; border-bottom: 1px dashed var(--hair); }
+.panel li b { font-weight: 600; }
+
+/* ==========================================================================
+   LONG FORM - overlapping folder stack
+   ========================================================================== */
+.folders { position: relative; padding-bottom: 2rem; }
+
+.folder {
+  position: relative; display: block;
+  border-radius: 12px 12px 4px 4px;
+  padding: clamp(1.1rem, 3vw, 2rem) clamp(1rem, 3vw, 1.75rem) clamp(2rem, 5vw, 3.25rem);
+  margin-top: clamp(-2.5rem, -5vw, -1.5rem);   /* the overlap */
+  transform: rotate(var(--rot, 0deg));
+  box-shadow: 0 -6px 18px rgba(0, 0, 0, 0.13);
+  transition: transform 0.4s var(--ease);
+  color: #fdfbf6;
+}
+.folder:first-child { margin-top: 0; }
+.folder:hover { transform: rotate(var(--rot, 0deg)) translateY(-10px); }
+
+/* the little index tab sticking up on each folder */
+.folder__tab {
+  display: inline-block;
+  font-family: var(--type); font-size: clamp(0.62rem, 1.2vw, 0.78rem);
+  letter-spacing: 0.1em; text-transform: uppercase;
+  padding: 0.3rem 0.75rem; border-radius: 6px;
+  background: rgba(0, 0, 0, 0.22);
+}
+.folder__name {
+  margin: 0.5rem 0 0;
+  font-family: 'Archivo', sans-serif; font-weight: 900;
+  font-size: clamp(2rem, 8vw, 5rem);
+  line-height: 0.88; letter-spacing: -0.035em; text-transform: uppercase;
+}
+.folder__meta {
+  margin-top: 0.5rem;
+  font-family: var(--mono); font-size: 0.72rem; opacity: 0.85;
+}
+
+/* ==========================================================================
+   REELS - tilted 9:16 cards, draggable
+   ========================================================================== */
+.reelwrap {
+  position: relative;
+  overflow-x: auto; overflow-y: hidden;
+  scrollbar-width: none;
+  cursor: grab; user-select: none;
+  padding-block: clamp(1rem, 4vh, 2.5rem);
+}
+.reelwrap::-webkit-scrollbar { display: none; }
+.reelwrap.is-dragging { cursor: grabbing; }
+
+.reelrow {
+  display: flex; gap: clamp(0.8rem, 2.5vw, 1.8rem);
+  padding-inline: clamp(1rem, 5vw, 4rem);
+  width: max-content;
+}
+
+.reelcard {
+  flex: 0 0 auto;
+  width: clamp(120px, 20vw, 190px);
+  aspect-ratio: 9 / 16;
+  border-radius: 10px;
+  display: flex; align-items: flex-end;
+  padding: 0.9rem;
+  transform: rotate(var(--rot, 0deg));
+  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.18);
+  transition: transform 0.4s var(--ease);
+  color: #fdfbf6;
+}
+.reelcard:hover { transform: rotate(var(--rot, 0deg)) translateY(-10px) scale(1.03); }
+.reelcard span {
+  font-family: 'Archivo', sans-serif; font-weight: 800;
+  font-size: clamp(0.8rem, 1.5vw, 1rem);
+  line-height: 1.05; letter-spacing: -0.02em; text-transform: uppercase;
+}
+.reelhint {
+  margin-top: 1.25rem; text-align: center;
+  font-family: var(--mono); font-size: 0.68rem;
+  letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted);
+}
+
+/* ==========================================================================
+   BRANDS - spines standing on a shelf
+   ========================================================================== */
+.shelf {
+  display: flex; align-items: flex-end; justify-content: center;
+  gap: clamp(0.35rem, 1.2vw, 0.8rem);
+  padding-bottom: 0.75rem;
+  border-bottom: 3px solid var(--hair);
+  margin-bottom: clamp(2rem, 6vh, 3.5rem);
+  overflow-x: auto;
+}
+
+.spine {
+  flex: 0 0 auto;
+  width: clamp(42px, 7vw, 66px);
+  height: var(--h, 250px);
+  border-radius: 5px 5px 2px 2px;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: space-between;
+  padding: 0.9rem 0.3rem 0.6rem;
+  box-shadow: inset -7px 0 14px rgba(0, 0, 0, 0.18);
+  transition: transform 0.35s var(--ease);
+  color: #fdfbf6;
+}
+.spine:hover { transform: translateY(-14px); }
+.spine__name {
+  writing-mode: vertical-rl;
+  font-family: 'Archivo', sans-serif; font-weight: 800;
+  font-size: clamp(0.7rem, 1.3vw, 0.95rem);
+  letter-spacing: 0.02em; text-transform: uppercase;
+  white-space: nowrap; overflow: hidden;
+}
+.spine__no {
+  font-family: var(--mono); font-size: 0.6rem; opacity: 0.8;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .folder:hover, .reelcard:hover, .spine:hover, .tab:hover { transform: none; }
+}
+
+
+/* ==========================================================================
+   CONTACT - driver card. Motorsport telemetry / gaming HUD.
+   Deliberately its own dark skin: it sits over the page, not in it.
+   Original livery - no real team marks or series branding.
+   ========================================================================== */
+.contact-open {
+  font: inherit; color: var(--red);
+  background: none; border: 0; padding: 0;
+  cursor: pointer;
+}
+
+.overlay {
+  position: fixed; inset: 0; z-index: 200;
+  display: grid; place-items: center;
+  padding: clamp(0.75rem, 4vw, 2rem);
+  background: rgba(8, 9, 11, 0.74);
+  backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+  animation: ovIn 0.25s var(--ease);
+  overflow-y: auto;
+}
+.overlay[hidden] { display: none; }
+@keyframes ovIn { from { opacity: 0; } to { opacity: 1; } }
+
+.cardwrap {
+  width: min(620px, 100%);
+  display: flex; flex-direction: column; align-items: flex-end;
+  gap: 0.5rem;
+  perspective: 1100px;          /* gives the tilt real depth */
+}
+
+/* lanyard + card swing together as one hanging object */
+.hang {
+  width: 100%;
+  transform-origin: top center;
+  animation: swing 1.05s var(--ease);
+}
+@keyframes swing {
+  0%   { transform: rotate(-3.6deg); }
+  38%  { transform: rotate(2.2deg); }
+  66%  { transform: rotate(-1deg); }
+  85%  { transform: rotate(0.4deg); }
+  100% { transform: rotate(0); }
+}
+
+/* clip and ring it hangs from */
+.lanyard { display: flex; flex-direction: column; align-items: center; margin-bottom: -7px; }
+.lanyard__bar {
+  width: 24px; height: 40px; border-radius: 5px;
+  background: linear-gradient(180deg, #d7d7d2, #8f8f89 55%, #c2c2bc);
+  box-shadow: 0 2px 7px rgba(0, 0, 0, 0.5);
+}
+.lanyard__ring {
+  width: 28px; height: 28px; margin-top: -7px;
+  border: 3px solid #b0b0aa; border-radius: 50%;
+}
+
+.overlay__close {
+  font-family: var(--mono); font-size: 0.72rem;
+  letter-spacing: 0.16em; text-transform: uppercase;
+  color: #eceae4; background: none; border: 0; padding: 0.4rem;
+  cursor: pointer; transition: color 0.25s var(--ease);
+}
+.overlay__close:hover { color: var(--hud); }
+
+/* ---- the card ---- */
+:root { --hud: #c8ff2e; --carbon: #0e1013; }
+
+.card {
+  --stripe: rgba(255, 255, 255, 0.04);
+  position: relative;
+  width: 100%;
+  transform-origin: top center;
+  /* --rx / --ry are written by script.js from the pointer */
+  transform: rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
+  transition: transform 0.25s var(--ease);
+  will-change: transform;
+  background:
+    repeating-linear-gradient(115deg, var(--stripe) 0 2px, transparent 2px 9px),
+    var(--carbon);
+  color: #eceae4;
+  border: 1px solid rgba(236, 234, 228, 0.14);
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 30px 70px rgba(0, 0, 0, 0.6);
+  animation: cardIn 0.4s var(--ease);
+}
+@keyframes cardIn {
+  from { opacity: 0; transform: translateY(14px) scale(0.985); }
+  to   { opacity: 1; transform: none; }
+}
+
+/* checkered strip along the top */
+.card::after {
+  content: ""; position: absolute; inset: 0; z-index: 3;
+  pointer-events: none; border-radius: inherit;
+  background: radial-gradient(380px circle at var(--mx, 50%) var(--my, 0%),
+              rgba(200, 255, 46, 0.14), transparent 62%);
+  opacity: 0; transition: opacity 0.35s var(--ease);
+}
+.overlay.is-live .card::after { opacity: 1; }
+
+.card__flag {
+  height: 12px;
+  background:
+    repeating-conic-gradient(#eceae4 0% 25%, #14171b 0% 50%) 0 0 / 12px 12px;
+}
+
+.card__head {
+  display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+  padding: 0.7rem clamp(0.9rem, 3vw, 1.4rem);
+  border-bottom: 1px solid rgba(236, 234, 228, 0.12);
+  font-family: var(--mono); font-size: 0.62rem;
+  letter-spacing: 0.18em; text-transform: uppercase; color: #8f9298;
+}
+.card__pos { color: var(--hud); font-weight: 600; }
+
+/* ---- live feed: the showreel ---- */
+.feed {
+  position: relative; margin: clamp(0.9rem, 3vw, 1.4rem);
+  aspect-ratio: 16 / 9; overflow: hidden;
+  border-radius: 4px; background: #05060700;
+}
+.feed video {
+  width: 100%; height: 100%; object-fit: cover; display: block;
+  transition: transform 0.6s var(--ease);
+}
+.feed:hover video { transform: scale(1.04); }
+
+/* HUD corner brackets */
+.feed::before, .feed::after {
+  content: ""; position: absolute; width: 22px; height: 22px;
+  border: 2px solid var(--hud); pointer-events: none;
+}
+.feed::before { top: 6px;    left: 6px;  border-right: 0; border-bottom: 0; }
+.feed::after  { bottom: 6px; right: 6px; border-left: 0;  border-top: 0; }
+
+.feed__tag {
+  position: absolute; top: 10px; right: 10px;
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 3px 8px; border-radius: 3px;
+  background: rgba(8, 9, 11, 0.72);
+  font-family: var(--mono); font-size: 0.55rem;
+  letter-spacing: 0.18em; text-transform: uppercase; color: #eceae4;
+}
+/* real state: the reel is actually playing */
+.feed__dot {
+  width: 6px; height: 6px; border-radius: 50%; background: var(--red);
+  animation: rec 1.4s ease-in-out infinite;
+}
+@keyframes rec { 0%, 100% { opacity: 1; } 50% { opacity: 0.25; } }
+
+.card__body { padding: 0 clamp(0.9rem, 3vw, 1.4rem) clamp(1rem, 3vw, 1.5rem); }
+
+.card__name {
+  margin: 0;
+  font-family: 'Archivo', sans-serif; font-weight: 900; font-style: italic;
+  font-size: clamp(1.9rem, 6vw, 3rem); line-height: 0.95;
+  letter-spacing: -0.035em; text-transform: uppercase;
+}
+.card__sub {
+  margin: 0.4rem 0 1.1rem;
+  font-family: var(--mono); font-size: 0.64rem;
+  letter-spacing: 0.18em; text-transform: uppercase; color: var(--hud);
+}
+
+/* telemetry rows with dotted leaders */
+.tele { margin: 0 0 1.1rem; }
+.tele div {
+  display: flex; align-items: baseline; gap: 0.5rem;
+  padding: 0.4rem 0;
+  font-family: var(--mono); font-size: 0.72rem;
+  border-bottom: 1px solid rgba(236, 234, 228, 0.09);
+  transition: border-color 0.25s var(--ease), padding-left 0.25s var(--ease);
+}
+.tele div:hover { border-bottom-color: var(--hud); padding-left: 6px; }
+.tele div:hover dt { color: var(--hud); }
+.tele dt { transition: color 0.25s var(--ease); }
+
+/* rows deal in as the card lands */
+.overlay.is-live .tele div,
+.overlay.is-live .chan a {
+  animation: rowIn 0.5s var(--ease) backwards;
+  animation-delay: calc(var(--r, 0) * 55ms + 180ms);
+}
+@keyframes rowIn {
+  from { opacity: 0; transform: translateX(-10px); }
+  to   { opacity: 1; transform: none; }
+}
+.tele dt { color: #8f9298; letter-spacing: 0.12em; text-transform: uppercase; }
+.tele dd { margin: 0 0 0 auto; color: #eceae4; text-align: right; }
+
+.chan { display: grid; gap: 0.4rem; }
+.chan a {
+  display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+  padding: 0.7rem 0.85rem;
+  border: 1px solid rgba(236, 234, 228, 0.16); border-radius: 4px;
+  font-family: var(--mono); font-size: 0.8rem; color: #eceae4;
+  transition: border-color 0.25s var(--ease), color 0.25s var(--ease),
+              transform 0.25s var(--ease), background 0.25s var(--ease);
+}
+.chan a:hover {
+  border-color: var(--hud); color: var(--hud);
+  background: rgba(200, 255, 46, 0.06);
+  transform: translateX(3px);
+}
+.chan a span:last-child { color: #8f9298; font-size: 0.62rem; letter-spacing: 0.14em; }
+.chan a:hover span:last-child { color: var(--hud); }
+
+.card__note {
+  margin: 1.1rem 0 0; text-align: center;
+  font-family: var(--mono); font-size: 0.58rem;
+  letter-spacing: 0.2em; text-transform: uppercase; color: #6e7178;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .overlay, .card, .hang { animation: none; }
+  .feed__dot { animation: none; }
+  .chan a:hover, .feed:hover video { transform: none; }
+  .tele div:hover { padding-left: 0; }
+  .overlay.is-live .tele div,
+  .overlay.is-live .chan a { animation: none; }
+  .card { transform: none !important; }
+  .overlay.is-live .card::after { opacity: 0; }
+}

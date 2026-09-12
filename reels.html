@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en" class="no-js">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Reels - AaryaFx</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800;900&family=Caveat:wght@700&family=Great+Vibes&family=IBM+Plex+Mono:wght@400;600&family=Special+Elite&display=swap" rel="stylesheet" />
+<script>
+  (function () {
+    document.documentElement.classList.remove('no-js');
+    try {
+      var saved = localStorage.getItem('aaryafx-theme');
+      var dark = saved ? saved === 'dark'
+                       : window.matchMedia('(prefers-color-scheme: dark)').matches;
+      if (dark) document.documentElement.setAttribute('data-theme', 'dark');
+    } catch (e) {}
+  })();
+</script>
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+<div class="site">
+
+  <header class="subbar">
+    <a class="mark" href="index.html" aria-label="AaryaFx home">AaryaFx</a>
+    <button class="theme" id="theme" type="button" aria-label="Switch to dark mode" aria-pressed="false">
+        <svg class="theme__sun" viewBox="0 0 24 24" aria-hidden="true">
+          <circle cx="12" cy="12" r="4.2" fill="currentColor"/>
+          <g stroke="currentColor" stroke-width="1.7" stroke-linecap="round">
+            <path d="M12 2.6v2.6M12 18.8v2.6M2.6 12h2.6M18.8 12h2.6M5.3 5.3l1.9 1.9M16.8 16.8l1.9 1.9M18.7 5.3l-1.9 1.9M7.2 16.8l-1.9 1.9"/>
+          </g>
+        </svg>
+        <svg class="theme__moon" viewBox="0 0 24 24" aria-hidden="true">
+          <path fill="currentColor" d="M20.7 14.5A8.6 8.6 0 0 1 9.5 3.3a8.7 8.7 0 1 0 11.2 11.2z"/>
+        </svg>
+      </button>
+  </header>
+
+  <nav class="subnav" aria-label="Primary">
+        <a href="about.html">About me</a>
+        <a href="longform.html">Long form</a>
+        <a href="reels.html" aria-current="page">Reels</a>
+        <a href="brands.html">Brand films</a>
+        <button class="cta contact-open" type="button">Contact me</button>
+  </nav>
+
+  <main class="pagebody">
+    <h1 class="pagehead">Reels</h1>
+    <p class="pagenote">vertical, fast, built to be rewatched</p>
+
+    <div class="reelwrap" id="reelwrap">
+      <div class="reelrow">
+        <!-- SWAP: real Drive link per reel -->
+        <a class="reelcard" style="background: var(--p1); --rot: -7deg;"
+           href="https://drive.google.com/PROJECT_LINK_HERE" target="_blank" rel="noopener noreferrer">
+          <span>Zepto 10-min</span>
+        </a>
+        <!-- SWAP: real Drive link per reel -->
+        <a class="reelcard" style="background: var(--p4); --rot: 4deg;"
+           href="https://drive.google.com/PROJECT_LINK_HERE" target="_blank" rel="noopener noreferrer">
+          <span>Titans hype</span>
+        </a>
+        <!-- SWAP: real Drive link per reel -->
+        <a class="reelcard" style="background: var(--p2); --rot: -3deg;"
+           href="https://drive.google.com/PROJECT_LINK_HERE" target="_blank" rel="noopener noreferrer">
+          <span>Festive haul</span>
+        </a>
+        <!-- SWAP: real Drive link per reel -->
+        <a class="reelcard" style="background: var(--p3); --rot: 6deg;"
+           href="https://drive.google.com/PROJECT_LINK_HERE" target="_blank" rel="noopener noreferrer">
+          <span>Skyline teaser</span>
+        </a>
+        <!-- SWAP: real Drive link per reel -->
+        <a class="reelcard" style="background: var(--p6); --rot: -5deg;"
+           href="https://drive.google.com/PROJECT_LINK_HERE" target="_blank" rel="noopener noreferrer">
+          <span>Campus day</span>
+        </a>
+        <!-- SWAP: real Drive link per reel -->
+        <a class="reelcard" style="background: var(--p5); --rot: 3deg;"
+           href="https://drive.google.com/PROJECT_LINK_HERE" target="_blank" rel="noopener noreferrer">
+          <span>Behind the cut</span>
+        </a>
+        <!-- SWAP: real Drive link per reel -->
+        <a class="reelcard" style="background: var(--p7); --rot: -4deg;"
+           href="https://drive.google.com/PROJECT_LINK_HERE" target="_blank" rel="noopener noreferrer">
+          <span>Grade test</span>
+        </a>
+        <!-- SWAP: real Drive link per reel -->
+        <a class="reelcard" style="background: var(--p8); --rot: 5deg;"
+           href="https://drive.google.com/PROJECT_LINK_HERE" target="_blank" rel="noopener noreferrer">
+          <span>Match night</span>
+        </a>
+        <!-- SWAP: real Drive link per reel -->
+        <a class="reelcard" style="background: var(--p2); --rot: -6deg;"
+           href="https://drive.google.com/PROJECT_LINK_HERE" target="_blank" rel="noopener noreferrer">
+          <span>Product drop</span>
+        </a>
+        <!-- SWAP: real Drive link per reel -->
+        <a class="reelcard" style="background: var(--p3); --rot: 2deg;"
+           href="https://drive.google.com/PROJECT_LINK_HERE" target="_blank" rel="noopener noreferrer">
+          <span>Studio reel</span>
+        </a>
+      </div>
+    </div>
+    <p class="reelhint">Drag to explore &#183; click to open on Drive</p>
+  </main>
+
+  <footer class="sitefoot">
+    <span>Ahmedabad, India</span>
+    <span>&copy; 2026 AaryaFx</span>
+  </footer>
+
+</div>
+
+<!-- ---------- contact: driver card ---------- -->
+<div class="overlay" id="contact" role="dialog" aria-modal="true" aria-labelledby="card-name" hidden>
+  <div class="cardwrap">
+  <button class="overlay__close" type="button">Close &#215;</button>
+
+  <div class="hang">
+  <div class="lanyard" aria-hidden="true">
+    <div class="lanyard__bar"></div>
+    <div class="lanyard__ring"></div>
+  </div>
+
+  <div class="card">
+    <div class="card__flag" aria-hidden="true"></div>
+
+    <div class="card__head">
+      <span>AaryaFx &#47;&#47; Driver card</span>
+      <span class="card__pos">P 01</span>
+    </div>
+
+    <!-- The showreel plays here. script.js only attaches the source when the
+         card is opened, and pauses it on close, so the file is never
+         downloaded for visitors who do not open contact. -->
+    <div class="feed">
+      <video id="contact-video" muted loop playsinline preload="none"
+             aria-label="AaryaFx showreel">
+        <source data-src="showreel.mp4" type="video/mp4" />
+      </video>
+      <span class="feed__tag"><i class="feed__dot"></i>On track</span>
+    </div>
+
+    <div class="card__body">
+      <!-- SWAP: your name as you want it shown -->
+      <h2 class="card__name" id="card-name">Aarya Patel</h2>
+      <!-- SWAP: change this line when you are not taking work -->
+      <p class="card__sub">Open to freelance</p>
+
+      <dl class="tele">
+        <div style="--r:-1"><dt>Role</dt><dd>Senior video editor</dd></div>
+        <div style="--r:-1"><dt>Base</dt><dd>Ahmedabad, India</dd></div>
+        <div style="--r:-1"><dt>Stack</dt><dd>Premiere &#183; After Effects &#183; Resolve</dd></div>
+        <div style="--r:-1"><dt>Specialism</dt><dd>Colour &#183; fast-cut motion</dd></div>
+      </dl>
+
+      <div class="chan">
+        <!-- SWAP: real email -->
+        <a style="--r:4" href="mailto:hello@aaryafx.com"><span>hello@aaryafx.com</span><span>Email</span></a>
+        <!-- SWAP: add your number, then set href="tel:+91..." -->
+        <a style="--r:5" href="#"><span>add your number</span><span>Phone</span></a>
+        <!-- SWAP: real Instagram -->
+        <a style="--r:6" href="https://instagram.com/PROFILE_HERE" target="_blank" rel="noopener noreferrer"><span>instagram</span><span>DM</span></a>
+        <!-- SWAP: real YouTube -->
+        <a style="--r:7" href="https://youtube.com/@CHANNEL_HERE" target="_blank" rel="noopener noreferrer"><span>youtube</span><span>Reel</span></a>
+      </div>
+
+      <p class="card__note">Ahmedabad, India &#183; working anywhere</p>
+    </div>
+  </div>
+  </div>
+  </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>

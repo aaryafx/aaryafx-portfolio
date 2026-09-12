@@ -2,3 +2,6 @@ node_modules
 dist
 .DS_Store
 *.local
+
+# installed third-party Claude skills, not part of the site
+.claude/skills/
