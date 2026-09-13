@@ -202,3 +202,84 @@
     if (e.target === overlay) close();   // click the backdrop, not the card
   });
 })();
+
+/* ==========================================================================
+   Custom cursor.
+   The dot follows the pointer closely, the ring lags behind, so the two merge
+   when still and separate while moving. Both are driven by transform inside
+   one rAF loop that stops itself once everything has settled, so an idle page
+   is not burning a frame callback forever.
+   ========================================================================== */
+(function () {
+  'use strict';
+
+  var layer = document.getElementById('cursor');
+  if (!layer) return;
+
+  // Only run where there is a real pointer. Touch would otherwise leave a
+  // stray dot parked wherever the last tap landed.
+  var fine = window.matchMedia('(hover: hover) and (pointer: fine)');
+  if (!fine.matches) return;
+
+  var ring = document.getElementById('cursor-ring');
+  var dot  = document.getElementById('cursor-dot');
+  if (!ring || !dot) return;
+
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+  // start parked off screen so nothing flashes at 0,0 before the first move
+  var mx = -200, my = -200;
+  var rx = mx, ry = my, dx = mx, dy = my;
+  var frame = null;
+
+  function place(el, x, y, size) {
+    el.style.transform = 'translate3d(' + (x - size / 2) + 'px,' + (y - size / 2) + 'px,0)';
+  }
+
+  function loop() {
+    // instant under reduced motion, otherwise the ring eases and trails
+    var dotEase  = reduce.matches ? 1 : 0.38;
+    var ringEase = reduce.matches ? 1 : 0.14;
+
+    dx += (mx - dx) * dotEase;
+    dy += (my - dy) * dotEase;
+    rx += (mx - rx) * ringEase;
+    ry += (my - ry) * ringEase;
+
+    place(dot,  dx, dy, 16);
+    place(ring, rx, ry, 40);
+
+    // stop once both have effectively caught up; pointermove restarts us
+    var rest = Math.abs(mx - rx) + Math.abs(my - ry) + Math.abs(mx - dx) + Math.abs(my - dy);
+    frame = rest < 0.1 ? null : requestAnimationFrame(loop);
+  }
+
+  function kick() { if (frame === null) frame = requestAnimationFrame(loop); }
+
+  document.addEventListener('pointermove', function (e) {
+    if (e.pointerType !== 'mouse') return;
+    mx = e.clientX; my = e.clientY;
+    if (!layer.classList.contains('is-on')) layer.classList.add('is-on');
+    kick();
+  }, { passive: true });
+
+  // hide when the pointer leaves the window entirely
+  document.addEventListener('pointerout', function (e) {
+    if (!e.relatedTarget) layer.classList.remove('is-on');
+  });
+  document.addEventListener('pointerover', function () { layer.classList.add('is-on'); });
+
+  // the ring opens over anything clickable
+  var HOT = 'a[href], button, [role="button"], summary, label';
+  document.addEventListener('pointerover', function (e) {
+    var t = e.target;
+    if (t && t.closest && t.closest(HOT)) layer.classList.add('is-hot');
+  });
+  document.addEventListener('pointerout', function (e) {
+    var t = e.target;
+    if (t && t.closest && t.closest(HOT)) layer.classList.remove('is-hot');
+  });
+
+  place(dot, mx, my, 16);
+  place(ring, rx, ry, 40);
+})();

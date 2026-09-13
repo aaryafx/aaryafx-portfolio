@@ -433,3 +433,51 @@ h1, h2, h3, p { margin: 0; }
   .overlay.is-live .card__row { animation: none; }
   .card__row:hover { padding-left: 0; }
 }
+
+
+/* ==========================================================================
+   CURSOR
+   A big circle that trails and a small dot that leads. They sit in one
+   exclusion-blended layer, which inverts whatever is underneath, so the
+   cursor reads on white, on the grey band and on the dark modal backdrop
+   without needing to know which it is over.
+   ========================================================================== */
+.cursor {
+  position: fixed; inset: 0; z-index: 9999;
+  pointer-events: none;
+  mix-blend-mode: exclusion;
+  display: none;                 /* enabled only for fine pointers, below */
+  opacity: 0;
+  transition: opacity 0.25s var(--ease);
+}
+.cursor.is-on { opacity: 1; }
+
+.cursor__ring, .cursor__dot {
+  position: fixed; top: 0; left: 0;
+  border-radius: 50%;
+  background: #ffffff;
+  will-change: transform;
+}
+.cursor__ring {
+  width: 40px; height: 40px;
+  transition: width 0.28s var(--ease), height 0.28s var(--ease);
+}
+.cursor__dot { width: 16px; height: 16px; }
+
+/* the ring opens up over anything clickable */
+.cursor.is-hot .cursor__ring { width: 64px; height: 64px; }
+
+/* Only take over the cursor where there is a real pointer. Touch devices and
+   anyone navigating by keyboard keep the native behaviour. */
+@media (hover: hover) and (pointer: fine) {
+  .cursor { display: block; }
+  body, a, button, [role="button"], summary, label { cursor: none; }
+}
+
+/* Text selection and form entry still need a real caret, so the native
+   cursor comes back over anything typed into. */
+input, textarea, select, [contenteditable] { cursor: auto !important; }
+
+@media (prefers-reduced-motion: reduce) {
+  .cursor__ring { transition: none; }
+}
