@@ -148,42 +148,6 @@
     });
   }
 
-  /* ---------- Reels: drag to pan ---------- */
-  var wrap = document.getElementById('reelwrap');
-  if (wrap) {
-    var down = false, startX = 0, startScroll = 0, moved = 0;
-
-    wrap.addEventListener('pointerdown', function (e) {
-      down = true; moved = 0;
-      startX = e.clientX;
-      startScroll = wrap.scrollLeft;
-      wrap.classList.add('is-dragging');
-      wrap.setPointerCapture(e.pointerId);
-    });
-
-    wrap.addEventListener('pointermove', function (e) {
-      if (!down) return;
-      var dx = e.clientX - startX;
-      moved = Math.abs(dx);
-      wrap.scrollLeft = startScroll - dx;
-    });
-
-    var end = function (e) {
-      if (!down) return;
-      down = false;
-      wrap.classList.remove('is-dragging');
-      if (e.pointerId != null && wrap.hasPointerCapture(e.pointerId)) {
-        wrap.releasePointerCapture(e.pointerId);
-      }
-    };
-    wrap.addEventListener('pointerup', end);
-    wrap.addEventListener('pointercancel', end);
-
-    // A drag that ends on a card must not also follow that card's link.
-    wrap.addEventListener('click', function (e) {
-      if (moved > 6) { e.preventDefault(); e.stopPropagation(); }
-    }, true);
-  }
 })();
 
 /* ==========================================================================

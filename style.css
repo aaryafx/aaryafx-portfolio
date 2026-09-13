@@ -374,87 +374,8 @@ a { color: inherit; text-decoration: none; }
   font-family: var(--mono); font-size: 0.72rem; opacity: 0.85;
 }
 
-/* ==========================================================================
-   REELS - tilted 9:16 cards, draggable
-   ========================================================================== */
-.reelwrap {
-  position: relative;
-  overflow-x: auto; overflow-y: hidden;
-  scrollbar-width: none;
-  cursor: grab; user-select: none;
-  padding-block: clamp(1rem, 4vh, 2.5rem);
-}
-.reelwrap::-webkit-scrollbar { display: none; }
-.reelwrap.is-dragging { cursor: grabbing; }
-
-.reelrow {
-  display: flex; gap: clamp(0.8rem, 2.5vw, 1.8rem);
-  padding-inline: clamp(1rem, 5vw, 4rem);
-  width: max-content;
-}
-
-.reelcard {
-  flex: 0 0 auto;
-  width: clamp(120px, 20vw, 190px);
-  aspect-ratio: 9 / 16;
-  border-radius: 10px;
-  display: flex; align-items: flex-end;
-  padding: 0.9rem;
-  transform: rotate(var(--rot, 0deg));
-  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.18);
-  transition: transform 0.4s var(--ease);
-  color: #fdfbf6;
-}
-.reelcard:hover { transform: rotate(var(--rot, 0deg)) translateY(-10px) scale(1.03); }
-.reelcard span {
-  font-family: 'Archivo', sans-serif; font-weight: 800;
-  font-size: clamp(0.8rem, 1.5vw, 1rem);
-  line-height: 1.05; letter-spacing: -0.02em; text-transform: uppercase;
-}
-.reelhint {
-  margin-top: 1.25rem; text-align: center;
-  font-family: var(--mono); font-size: 0.68rem;
-  letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted);
-}
-
-/* ==========================================================================
-   BRANDS - spines standing on a shelf
-   ========================================================================== */
-.shelf {
-  display: flex; align-items: flex-end; justify-content: center;
-  gap: clamp(0.35rem, 1.2vw, 0.8rem);
-  padding-bottom: 0.75rem;
-  border-bottom: 3px solid var(--hair);
-  margin-bottom: clamp(2rem, 6vh, 3.5rem);
-  overflow-x: auto;
-}
-
-.spine {
-  flex: 0 0 auto;
-  width: clamp(42px, 7vw, 66px);
-  height: var(--h, 250px);
-  border-radius: 5px 5px 2px 2px;
-  display: flex; flex-direction: column;
-  align-items: center; justify-content: space-between;
-  padding: 0.9rem 0.3rem 0.6rem;
-  box-shadow: inset -7px 0 14px rgba(0, 0, 0, 0.18);
-  transition: transform 0.35s var(--ease);
-  color: #fdfbf6;
-}
-.spine:hover { transform: translateY(-14px); }
-.spine__name {
-  writing-mode: vertical-rl;
-  font-family: 'Archivo', sans-serif; font-weight: 800;
-  font-size: clamp(0.7rem, 1.3vw, 0.95rem);
-  letter-spacing: 0.02em; text-transform: uppercase;
-  white-space: nowrap; overflow: hidden;
-}
-.spine__no {
-  font-family: var(--mono); font-size: 0.6rem; opacity: 0.8;
-}
-
 @media (prefers-reduced-motion: reduce) {
-  .folder:hover, .reelcard:hover, .spine:hover, .tab:hover { transform: none; }
+  .folder:hover, .tab:hover { transform: none; }
 }
 
 
