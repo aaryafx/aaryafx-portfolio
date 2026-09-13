@@ -62,7 +62,11 @@
     var byWidth  = availW / (widest / PROBE);
     var byHeight = availH / (lines.length * LH);
 
-    display.style.fontSize = Math.floor(Math.min(byWidth, byHeight)) + 'px';
+    // A transient layout (pane resize, font swap) can report a tiny stage
+    // height, which would floor the size to 0px and blank the headline.
+    // Never go below a legible minimum.
+    var size = Math.max(16, Math.floor(Math.min(byWidth, byHeight)));
+    display.style.fontSize = size + 'px';
   }
 
   fitDisplay();
@@ -290,4 +294,19 @@
   overlay.addEventListener('mousedown', function (e) {
     if (e.target === overlay) close();   // click the backdrop, not the card
   });
+})();
+
+/* ==========================================================================
+   Sticky mini bar. Appears once the hero poster has scrolled away.
+   IntersectionObserver, so no per-frame scroll handler.
+   ========================================================================== */
+(function () {
+  'use strict';
+  var bar = document.getElementById('minibar');
+  var hero = document.getElementById('top');
+  if (!bar || !hero || !('IntersectionObserver' in window)) return;
+
+  new IntersectionObserver(function (entries) {
+    bar.classList.toggle('is-in', !entries[0].isIntersecting);
+  }, { threshold: 0, rootMargin: '-60px 0px 0px 0px' }).observe(hero);
 })();

@@ -28,7 +28,7 @@ jobs:
       - name: Assemble site
         run: |
           mkdir -p _site
-          cp index.html about.html longform.html reels.html brands.html _site/
+          cp index.html _site/
           cp style.css script.js _site/
           cp showreel.mp4 _site/
           # tell Pages not to run these through Jekyll
