@@ -1,155 +1,93 @@
 /* ==========================================================================
-   AaryaFx - poster behaviour
-   1. split each headline line into one span per character
-   2. fit the type slab to the viewport (width AND height)
-   3. dark / light toggle, persisted
+   AaryaFx
+   1. local clock in the header
+   2. sticky bar once the header scrolls away
+   3. showreel: load and play only when it is on screen
    ========================================================================== */
 (function () {
   'use strict';
 
-  document.documentElement.classList.add('js');
-
-  var display = document.querySelector('.display');
-  var stage   = display && display.parentElement;
-  var lines   = display ? Array.prototype.slice.call(display.querySelectorAll('.line')) : [];
-
-  /* ---------- 1. per-character split ------------------------------------
-     Each letter becomes its own inline-block span so it can be transformed
-     on its own (staggered entrance, per-letter hover).
-     The <h1> carries aria-label and the lines are aria-hidden, so screen
-     readers read one clean sentence instead of loose letters.              */
-  var i = 0;
-  lines.forEach(function (line) {
-    var text = line.textContent;
-    var frag = document.createDocumentFragment();
-
-    for (var c = 0; c < text.length; c++) {
-      var span = document.createElement('span');
-      span.className = 'ch';
-      span.style.setProperty('--i', i++);
-      span.textContent = text[c] === ' ' ? ' ' : text[c];
-      frag.appendChild(span);
-    }
-
-    line.textContent = '';
-    line.appendChild(frag);
-  });
-
-  /* ---------- 2. fit the slab -------------------------------------------
-     Lines have different character counts, so a pure vw font-size cannot
-     guarantee the LONGEST line fits: it just overflows and gets clipped.
-     Measure the widest line at a known size, then solve for the size that
-     fills the available width, and cap that by the available height.      */
-  var LH = 0.92;          // must match --line-height in style.css
-  var WIDTH_SAFETY = 0.99;
-  var HEIGHT_SHARE = 0.88; // share of the stage the slab may occupy
-
-  function fitDisplay() {
-    if (!display || !stage || !lines.length) return;
-
-    var availW = stage.clientWidth  * WIDTH_SAFETY;
-    var availH = stage.clientHeight * HEIGHT_SHARE;
-    if (availW <= 0 || availH <= 0) return;
-
-    // Measure at a fixed probe size so the ratio is stable.
-    var PROBE = 100;
-    display.style.fontSize = PROBE + 'px';
-
-    var widest = 0;
-    lines.forEach(function (l) { widest = Math.max(widest, l.scrollWidth); });
-    if (!widest) return;
-
-    var byWidth  = availW / (widest / PROBE);
-    var byHeight = availH / (lines.length * LH);
-
-    // A transient layout (pane resize, font swap) can report a tiny stage
-    // height, which would floor the size to 0px and blank the headline.
-    // Never go below a legible minimum.
-    var size = Math.max(16, Math.floor(Math.min(byWidth, byHeight)));
-    display.style.fontSize = size + 'px';
-  }
-
-  fitDisplay();
-  // Re-fit once the webfont has actually swapped in, or metrics are wrong.
-  if (document.fonts && document.fonts.ready) document.fonts.ready.then(fitDisplay);
-
-  if ('ResizeObserver' in window && stage) {
-    new ResizeObserver(fitDisplay).observe(stage);
-  } else {
-    window.addEventListener('resize', fitDisplay);
-  }
-
-  /* ---------- 3. theme toggle ------------------------------------------ */
-  var root = document.documentElement;
-  var btn  = document.getElementById('theme');
-
-  function sync() {
-    if (!btn) return;
-    var dark = root.getAttribute('data-theme') === 'dark';
-    btn.setAttribute('aria-pressed', dark ? 'true' : 'false');
-    btn.setAttribute('aria-label', dark ? 'Switch to light mode' : 'Switch to dark mode');
-  }
-
-  if (btn) {
-    btn.addEventListener('click', function () {
-      var dark = root.getAttribute('data-theme') === 'dark';
-      if (dark) root.removeAttribute('data-theme');
-      else root.setAttribute('data-theme', 'dark');
-      try { localStorage.setItem('aaryafx-theme', dark ? 'light' : 'dark'); } catch (e) {}
-      sync();
-    });
-    sync();
-  }
-
-  /* Follow the OS only while the visitor has not chosen for themselves. */
-  var mq = window.matchMedia('(prefers-color-scheme: dark)');
-  var onScheme = function (e) {
-    var saved = null;
-    try { saved = localStorage.getItem('aaryafx-theme'); } catch (err) {}
-    if (saved) return;
-    if (e.matches) root.setAttribute('data-theme', 'dark');
-    else root.removeAttribute('data-theme');
-    sync();
-  };
-  if (mq.addEventListener) mq.addEventListener('change', onScheme);
-  else if (mq.addListener) mq.addListener(onScheme);
-})();
-
-/* ==========================================================================
-   Subpage behaviour. Every block is guarded, so this same file is safe to
-   load on the poster landing and on all four subpages.
-   ========================================================================== */
-(function () {
-  'use strict';
-
-  /* ---------- About: tab panels ---------- */
-  var tabs = Array.prototype.slice.call(document.querySelectorAll('.tab[role="tab"]'));
-  if (tabs.length) {
-    var select = function (tab) {
-      tabs.forEach(function (t) {
-        var on = t === tab;
-        t.setAttribute('aria-selected', on ? 'true' : 'false');
-        var panel = document.getElementById(t.getAttribute('aria-controls'));
-        if (panel) panel.hidden = !on;
+  /* ---------- 1. local clock ---------- */
+  var clock = document.getElementById('clock');
+  if (clock) {
+    var fmt;
+    try {
+      fmt = new Intl.DateTimeFormat('en-GB', {
+        timeZone: 'Asia/Kolkata',
+        day: 'numeric', month: 'short',
+        hour: '2-digit', minute: '2-digit', hour12: false
       });
+    } catch (e) { fmt = null; }
+
+    var tick = function () {
+      if (!fmt) return;
+      // "14 Sep, 18:42"
+      clock.textContent = fmt.format(new Date()).replace(/,\s*/, ', ');
+    };
+    tick();
+    setInterval(tick, 30000);
+  }
+
+  /* ---------- 2. sticky bar ----------
+     IntersectionObserver on the header, so there is no scroll handler.      */
+  var bar  = document.getElementById('bar');
+  var head = document.getElementById('top');
+  if (bar && head && 'IntersectionObserver' in window) {
+    new IntersectionObserver(function (entries) {
+      bar.classList.toggle('is-in', !entries[0].isIntersecting);
+    }, { threshold: 0, rootMargin: '-70px 0px 0px 0px' }).observe(head);
+  }
+
+  /* ---------- 3. showreel ---------- */
+  var reel  = document.getElementById('reel');
+  var sound = document.getElementById('sound');
+
+  if (reel) {
+    var tryPlay = function () {
+      var p = reel.play();
+      if (p && p.catch) p.catch(function () {});   // autoplay can be refused
     };
 
-    tabs.forEach(function (tab, idx) {
-      tab.addEventListener('click', function () { select(tab); });
-      // Left/right arrows move between tabs, which is what a tablist should do.
-      tab.addEventListener('keydown', function (e) {
-        var dir = e.key === 'ArrowRight' ? 1 : e.key === 'ArrowLeft' ? -1 : 0;
-        if (!dir) return;
-        e.preventDefault();
-        var next = tabs[(idx + dir + tabs.length) % tabs.length];
-        next.focus();
-        select(next);
+    // load() aborts any play() already in flight, so wait for data before
+    // playing. Without this the reel loads but never starts.
+    var attach = function () {
+      var src = reel.querySelector('source[data-src]');
+      if (src && !src.src) {
+        src.src = src.getAttribute('data-src');
+        reel.addEventListener('loadeddata', tryPlay, { once: true });
+        reel.load();
+        return;
+      }
+      tryPlay();
+    };
+
+    if ('IntersectionObserver' in window) {
+      new IntersectionObserver(function (entries, obs) {
+        entries.forEach(function (entry) {
+          // Pause only when the reel is fully gone. While the video's
+          // intrinsic size resolves the figure changes height, which dips the
+          // ratio and would otherwise stutter playback on first load.
+          if (entry.intersectionRatio === 0) {
+            if (!reel.paused) reel.pause();      // offscreen, stop decoding
+            return;
+          }
+          if (entry.intersectionRatio >= 0.25) attach();
+        });
+      }, { threshold: [0, 0.25] }).observe(reel);
+    } else {
+      attach();
+    }
+
+    if (sound) {
+      sound.addEventListener('click', function () {
+        reel.muted = !reel.muted;
+        sound.setAttribute('aria-pressed', reel.muted ? 'false' : 'true');
+        sound.textContent = reel.muted ? 'Sound off' : 'Sound on';
+        if (!reel.muted) tryPlay();
       });
-    });
+    }
   }
-
 })();
-
 /* ==========================================================================
    Contact badge modal. Present on every page.
    ========================================================================== */
@@ -180,13 +118,18 @@
     // Attach the source on first open only, so the reel is never downloaded
     // by visitors who never open the card.
     if (video) {
+      var play = function () {
+        var p = video.play();
+        if (p && p.catch) p.catch(function () {});  // autoplay can be refused
+      };
       var src = video.querySelector('source[data-src]');
       if (src && !src.src) {
         src.src = src.getAttribute('data-src');
+        video.addEventListener('loadeddata', play, { once: true });
         video.load();
+      } else {
+        play();
       }
-      var p = video.play();
-      if (p && p.catch) p.catch(function () {});   // autoplay can be refused
     }
 
     // is-live drives the sheen and the row stagger
@@ -258,19 +201,4 @@
   overlay.addEventListener('mousedown', function (e) {
     if (e.target === overlay) close();   // click the backdrop, not the card
   });
-})();
-
-/* ==========================================================================
-   Sticky mini bar. Appears once the hero poster has scrolled away.
-   IntersectionObserver, so no per-frame scroll handler.
-   ========================================================================== */
-(function () {
-  'use strict';
-  var bar = document.getElementById('minibar');
-  var hero = document.getElementById('top');
-  if (!bar || !hero || !('IntersectionObserver' in window)) return;
-
-  new IntersectionObserver(function (entries) {
-    bar.classList.toggle('is-in', !entries[0].isIntersecting);
-  }, { threshold: 0, rootMargin: '-60px 0px 0px 0px' }).observe(hero);
 })();
