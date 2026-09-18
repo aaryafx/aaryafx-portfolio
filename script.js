@@ -175,100 +175,16 @@
 })();
 
 /* ==========================================================================
-   Custom cursor.
-   A small dot eases after the pointer. Inside #work a tool badge trails a
-   little further behind, leans with the direction of travel, and swaps to
-   the next tool every ~170px of movement. One rAF loop, stops when settled.
-   ========================================================================== */
-(function () {
-  'use strict';
-
-  var layer = document.getElementById('cursor');
-  if (!layer) return;
-  if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
-
-  var dot   = document.getElementById('cursor-dot');
-  var tool  = document.getElementById('cursor-tool');
-  var tools = tool ? tool.querySelectorAll('.tool') : [];
-  if (!dot || !tool || !tools.length) return;
-
-  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
-  var HOT = 'a[href], button, [role="button"], summary, label';
-  var STEP = 170;                    // px of travel per tool swap
-  var OFFSET = 34;                   // badge sits below-right of the pointer
-
-  var mx = -200, my = -200, lx = mx, ly = my;
-  var dx = mx, dy = my, tx = mx, ty = my, tilt = 0;
-  var travelled = 0, idx = 0, inWork = false, raf = null;
-
-  function loop() {
-    var kd = reduce.matches ? 1 : 0.28;
-    var kt = reduce.matches ? 1 : 0.13;
-
-    dx += (mx - dx) * kd;  dy += (my - dy) * kd;
-    var gx = mx + OFFSET, gy = my + OFFSET;
-    var vx = gx - tx;
-    tx += vx * kt;  ty += (gy - ty) * kt;
-    // lean into the direction of travel, clamped, easing back to upright
-    var lean = reduce.matches ? 0 : Math.max(-14, Math.min(14, vx * 0.12));
-    tilt += (lean - tilt) * 0.2;
-
-    dot.style.transform  = 'translate3d(' + dx + 'px,' + dy + 'px,0)';
-    tool.style.transform = 'translate3d(' + tx + 'px,' + ty + 'px,0) rotate(' + tilt.toFixed(2) + 'deg)';
-
-    var rest = Math.abs(mx - dx) + Math.abs(my - dy) + Math.abs(gx - tx) + Math.abs(gy - ty) + Math.abs(tilt);
-    raf = rest < 0.2 ? null : requestAnimationFrame(loop);
-  }
-  function kick() { if (raf === null) raf = requestAnimationFrame(loop); }
-
-  function swap() {
-    tools[idx].classList.remove('is-active');
-    idx = (idx + 1) % tools.length;
-    tools[idx].classList.add('is-active');
-  }
-
-  document.addEventListener('pointermove', function (e) {
-    if (e.pointerType !== 'mouse') return;
-    mx = e.clientX; my = e.clientY;
-    if (inWork) {
-      travelled += Math.hypot(mx - lx, my - ly);
-      if (travelled >= STEP) { travelled = 0; swap(); }
-    }
-    lx = mx; ly = my;
-    layer.classList.add('is-on');
-    kick();
-  }, { passive: true });
-
-  document.addEventListener('pointerover', function (e) {
-    var t = e.target;
-    if (!t.closest) return;
-    layer.classList.toggle('is-hot', !!t.closest(HOT));
-    var w = !!t.closest('#work');
-    if (w !== inWork) {
-      inWork = w;
-      layer.classList.toggle('is-work', w);
-      if (w) { tx = mx + OFFSET; ty = my + OFFSET; }   // appear at the pointer, not flying in
-    }
-  });
-
-  document.addEventListener('pointerout', function (e) {
-    if (!e.relatedTarget) { layer.classList.remove('is-on', 'is-work', 'is-hot'); inWork = false; }
-  });
-  document.addEventListener('pointerdown', function () { layer.classList.add('is-down'); });
-  document.addEventListener('pointerup',   function () { layer.classList.remove('is-down'); });
-})();
-
-/* ==========================================================================
-   Pointer-aware tiles. Writes the cursor position onto each stat tile and
-   service card so the light (stats) and the colour flood (services) start
-   from where the cursor actually is. Stat tiles also lean toward it.
+   Pointer-aware tiles. Writes the cursor position onto each stat tile so
+   its highlight starts from where the cursor actually is, and the tile
+   leans toward it.
    ========================================================================== */
 (function () {
   'use strict';
   if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
   var reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
 
-  document.querySelectorAll('.stat, .svc').forEach(function (el) {
+  document.querySelectorAll('.stat').forEach(function (el) {
     var tilt = el.classList.contains('stat');
     var frame = null, px = 0, py = 0;
 
