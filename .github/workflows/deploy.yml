@@ -30,7 +30,7 @@ jobs:
           mkdir -p _site
           cp index.html _site/
           cp style.css script.js _site/
-          cp showreel.mp4 _site/
+          cp showreel.mp4 aarya.jpg _site/
           # tell Pages not to run these through Jekyll
           touch _site/.nojekyll
 

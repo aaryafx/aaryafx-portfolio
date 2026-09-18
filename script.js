@@ -40,7 +40,6 @@
 
   /* ---------- 3. showreel ---------- */
   var reel  = document.getElementById('reel');
-  var sound = document.getElementById('sound');
 
   if (reel) {
     var tryPlay = function () {
@@ -78,14 +77,6 @@
       attach();
     }
 
-    if (sound) {
-      sound.addEventListener('click', function () {
-        reel.muted = !reel.muted;
-        sound.setAttribute('aria-pressed', reel.muted ? 'false' : 'true');
-        sound.textContent = reel.muted ? 'Sound off' : 'Sound on';
-        if (!reel.muted) tryPlay();
-      });
-    }
   }
 })();
 /* ==========================================================================
@@ -106,31 +97,12 @@
     );
   }
 
-  var video = document.getElementById('contact-video');
-
   function open(trigger) {
     opener = trigger || null;
     overlay.hidden = false;
     document.body.style.overflow = 'hidden';
     if (closeBtn) closeBtn.focus();
     document.addEventListener('keydown', onKey);
-
-    // Attach the source on first open only, so the reel is never downloaded
-    // by visitors who never open the card.
-    if (video) {
-      var play = function () {
-        var p = video.play();
-        if (p && p.catch) p.catch(function () {});  // autoplay can be refused
-      };
-      var src = video.querySelector('source[data-src]');
-      if (src && !src.src) {
-        src.src = src.getAttribute('data-src');
-        video.addEventListener('loadeddata', play, { once: true });
-        video.load();
-      } else {
-        play();
-      }
-    }
 
     // is-live drives the sheen and the row stagger
     requestAnimationFrame(function () { overlay.classList.add('is-live'); });
@@ -142,7 +114,6 @@
     document.removeEventListener('keydown', onKey);
     overlay.classList.remove('is-live');
     if (card) { card.style.removeProperty('--rx'); card.style.removeProperty('--ry'); }
-    if (video) video.pause();
     if (opener) opener.focus();
   }
 
@@ -205,81 +176,124 @@
 
 /* ==========================================================================
    Custom cursor.
-   The dot follows the pointer closely, the ring lags behind, so the two merge
-   when still and separate while moving. Both are driven by transform inside
-   one rAF loop that stops itself once everything has settled, so an idle page
-   is not burning a frame callback forever.
+   A small dot eases after the pointer. Inside #work a tool badge trails a
+   little further behind, leans with the direction of travel, and swaps to
+   the next tool every ~170px of movement. One rAF loop, stops when settled.
    ========================================================================== */
 (function () {
   'use strict';
 
   var layer = document.getElementById('cursor');
   if (!layer) return;
+  if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
 
-  // Only run where there is a real pointer. Touch would otherwise leave a
-  // stray dot parked wherever the last tap landed.
-  var fine = window.matchMedia('(hover: hover) and (pointer: fine)');
-  if (!fine.matches) return;
-
-  var ring = document.getElementById('cursor-ring');
-  var dot  = document.getElementById('cursor-dot');
-  if (!ring || !dot) return;
+  var dot   = document.getElementById('cursor-dot');
+  var tool  = document.getElementById('cursor-tool');
+  var tools = tool ? tool.querySelectorAll('.tool') : [];
+  if (!dot || !tool || !tools.length) return;
 
   var reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
+  var HOT = 'a[href], button, [role="button"], summary, label';
+  var STEP = 170;                    // px of travel per tool swap
+  var OFFSET = 34;                   // badge sits below-right of the pointer
 
-  // start parked off screen so nothing flashes at 0,0 before the first move
-  var mx = -200, my = -200;
-  var rx = mx, ry = my, dx = mx, dy = my;
-  var frame = null;
-
-  function place(el, x, y, size) {
-    el.style.transform = 'translate3d(' + (x - size / 2) + 'px,' + (y - size / 2) + 'px,0)';
-  }
+  var mx = -200, my = -200, lx = mx, ly = my;
+  var dx = mx, dy = my, tx = mx, ty = my, tilt = 0;
+  var travelled = 0, idx = 0, inWork = false, raf = null;
 
   function loop() {
-    // instant under reduced motion, otherwise the ring eases and trails
-    var dotEase  = reduce.matches ? 1 : 0.38;
-    var ringEase = reduce.matches ? 1 : 0.14;
+    var kd = reduce.matches ? 1 : 0.28;
+    var kt = reduce.matches ? 1 : 0.13;
 
-    dx += (mx - dx) * dotEase;
-    dy += (my - dy) * dotEase;
-    rx += (mx - rx) * ringEase;
-    ry += (my - ry) * ringEase;
+    dx += (mx - dx) * kd;  dy += (my - dy) * kd;
+    var gx = mx + OFFSET, gy = my + OFFSET;
+    var vx = gx - tx;
+    tx += vx * kt;  ty += (gy - ty) * kt;
+    // lean into the direction of travel, clamped, easing back to upright
+    var lean = reduce.matches ? 0 : Math.max(-14, Math.min(14, vx * 0.12));
+    tilt += (lean - tilt) * 0.2;
 
-    place(dot,  dx, dy, 16);
-    place(ring, rx, ry, 40);
+    dot.style.transform  = 'translate3d(' + dx + 'px,' + dy + 'px,0)';
+    tool.style.transform = 'translate3d(' + tx + 'px,' + ty + 'px,0) rotate(' + tilt.toFixed(2) + 'deg)';
 
-    // stop once both have effectively caught up; pointermove restarts us
-    var rest = Math.abs(mx - rx) + Math.abs(my - ry) + Math.abs(mx - dx) + Math.abs(my - dy);
-    frame = rest < 0.1 ? null : requestAnimationFrame(loop);
+    var rest = Math.abs(mx - dx) + Math.abs(my - dy) + Math.abs(gx - tx) + Math.abs(gy - ty) + Math.abs(tilt);
+    raf = rest < 0.2 ? null : requestAnimationFrame(loop);
   }
+  function kick() { if (raf === null) raf = requestAnimationFrame(loop); }
 
-  function kick() { if (frame === null) frame = requestAnimationFrame(loop); }
+  function swap() {
+    tools[idx].classList.remove('is-active');
+    idx = (idx + 1) % tools.length;
+    tools[idx].classList.add('is-active');
+  }
 
   document.addEventListener('pointermove', function (e) {
     if (e.pointerType !== 'mouse') return;
     mx = e.clientX; my = e.clientY;
-    if (!layer.classList.contains('is-on')) layer.classList.add('is-on');
+    if (inWork) {
+      travelled += Math.hypot(mx - lx, my - ly);
+      if (travelled >= STEP) { travelled = 0; swap(); }
+    }
+    lx = mx; ly = my;
+    layer.classList.add('is-on');
     kick();
   }, { passive: true });
 
-  // hide when the pointer leaves the window entirely
-  document.addEventListener('pointerout', function (e) {
-    if (!e.relatedTarget) layer.classList.remove('is-on');
-  });
-  document.addEventListener('pointerover', function () { layer.classList.add('is-on'); });
-
-  // the ring opens over anything clickable
-  var HOT = 'a[href], button, [role="button"], summary, label';
   document.addEventListener('pointerover', function (e) {
     var t = e.target;
-    if (t && t.closest && t.closest(HOT)) layer.classList.add('is-hot');
-  });
-  document.addEventListener('pointerout', function (e) {
-    var t = e.target;
-    if (t && t.closest && t.closest(HOT)) layer.classList.remove('is-hot');
+    if (!t.closest) return;
+    layer.classList.toggle('is-hot', !!t.closest(HOT));
+    var w = !!t.closest('#work');
+    if (w !== inWork) {
+      inWork = w;
+      layer.classList.toggle('is-work', w);
+      if (w) { tx = mx + OFFSET; ty = my + OFFSET; }   // appear at the pointer, not flying in
+    }
   });
 
-  place(dot, mx, my, 16);
-  place(ring, rx, ry, 40);
+  document.addEventListener('pointerout', function (e) {
+    if (!e.relatedTarget) { layer.classList.remove('is-on', 'is-work', 'is-hot'); inWork = false; }
+  });
+  document.addEventListener('pointerdown', function () { layer.classList.add('is-down'); });
+  document.addEventListener('pointerup',   function () { layer.classList.remove('is-down'); });
+})();
+
+/* ==========================================================================
+   Pointer-aware tiles. Writes the cursor position onto each stat tile and
+   service card so the light (stats) and the colour flood (services) start
+   from where the cursor actually is. Stat tiles also lean toward it.
+   ========================================================================== */
+(function () {
+  'use strict';
+  if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+  document.querySelectorAll('.stat, .svc').forEach(function (el) {
+    var tilt = el.classList.contains('stat');
+    var frame = null, px = 0, py = 0;
+
+    function apply() {
+      frame = null;
+      var r = el.getBoundingClientRect();
+      var x = (px - r.left) / r.width, y = (py - r.top) / r.height;
+      el.style.setProperty('--mx', (x * 100).toFixed(1) + '%');
+      el.style.setProperty('--my', (y * 100).toFixed(1) + '%');
+      if (tilt && !reduce.matches) {
+        el.style.setProperty('--ry', ((x - 0.5) * 6).toFixed(2) + 'deg');
+        el.style.setProperty('--rx', ((0.5 - y) * 6).toFixed(2) + 'deg');
+      }
+    }
+
+    function track(e) {
+      px = e.clientX; py = e.clientY;
+      if (frame === null) frame = requestAnimationFrame(apply);
+    }
+
+    el.addEventListener('pointerenter', function (e) { px = e.clientX; py = e.clientY; apply(); });
+    el.addEventListener('pointermove', track);
+    el.addEventListener('pointerleave', function () {
+      el.style.removeProperty('--rx');
+      el.style.removeProperty('--ry');
+    });
+  });
 })();
