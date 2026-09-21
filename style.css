@@ -205,6 +205,32 @@ h1, h2, h3, p { margin: 0; }
 .svc__lead  { font-size: 0.95rem; font-weight: 500; }
 .svc__body  { font-size: 0.9rem; color: var(--muted); line-height: 1.6; }
 
+/* ---- software list, under the service cards ---- */
+.soft { list-style: none; margin: 0; padding: 0; display: grid; gap: clamp(0.75rem, 2vw, 1rem); }
+@media (min-width: 700px) { .soft { grid-template-columns: repeat(3, 1fr); } }
+.soft__item {
+  display: flex; align-items: center; gap: 0.9rem;
+  padding: 0.9rem 1rem;
+  border: 1px solid var(--hair); border-radius: 6px;
+  transition: border-color 0.3s var(--ease), transform 0.3s var(--ease);
+}
+.soft__item:hover { border-color: var(--ink); transform: translateY(-2px); }
+.soft__badge {
+  flex: 0 0 auto; display: grid; place-items: center;
+  width: 40px; height: 40px; border-radius: 9px;
+  font-size: 1rem; font-weight: 500; letter-spacing: -0.02em;
+}
+.soft__badge--pr { background: #00005b; color: #9999ff; border: 1px solid #9999ff; }
+.soft__badge--ae { background: #00005b; color: #d291ff; border: 1px solid #d291ff; }
+.soft__badge--dv { background: #1b1b1f; color: #fff; }
+.soft__badge--dv svg { width: 62%; height: 62%; }
+.soft__name { font-size: 0.98rem; letter-spacing: -0.01em; }
+.soft__level {
+  margin-left: auto;
+  font-family: var(--mono); font-size: 0.68rem;
+  letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted);
+}
+
 /* ---- work: stats, experience, clients ----
    Graphite cards (ivory in light mode) with a single quiet bloom of muted
    colour in one corner and a hairline edge. On hover the tile lifts and
@@ -326,17 +352,7 @@ h1, h2, h3, p { margin: 0; }
   font-size: clamp(1.8rem, 4.2vw, 3.25rem);
   font-weight: 300; letter-spacing: -0.035em; line-height: 1.1;
 }
-.foot__grid {
-  display: grid; gap: clamp(1.5rem, 4vw, 2.5rem);
-  margin-top: clamp(2.5rem, 6vw, 4rem);
-}
-@media (min-width: 700px) { .foot__grid { grid-template-columns: repeat(3, 1fr); } }
-.foot .label { font-size: 0.75rem; color: var(--muted); margin-bottom: 0.6rem; }
-.foot__link {
-  display: block; font-size: 1rem; padding: 0.2rem 0;
-  transition: color 0.25s var(--ease);
-}
-.foot__link:hover { color: var(--red); }
+.foot__cta { margin-top: clamp(2rem, 5vw, 3rem); }
 .foot__btn {
   font: inherit; font-size: 0.9rem;
   padding: 0.7rem 1.2rem; cursor: url("cursor-hand.png") 9 0, pointer;
@@ -357,7 +373,7 @@ h1, h2, h3, p { margin: 0; }
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   .ticker__track { animation: none; }
-  .svc:hover, .stat:hover { transform: none; }
+  .svc:hover, .stat:hover, .soft__item:hover { transform: none; }
   .stat:hover .stat__num { transform: none; }
   .portfolio:hover .portfolio__go { transform: none; }
   .bar { transition: none; }
