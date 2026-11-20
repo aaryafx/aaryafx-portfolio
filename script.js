@@ -213,3 +213,83 @@
     });
   });
 })();
+
+/* ==========================================================================
+   Work page: filter chips and the Drive player.
+   Thumbnails are static images; the iframe is only given a src when a card
+   is opened, so nothing streams until someone presses play.
+   ========================================================================== */
+(function () {
+  'use strict';
+  var grid = document.getElementById('pgrid');
+  if (!grid) return;
+
+  var cards = Array.prototype.slice.call(grid.querySelectorAll('.pcard'));
+
+  /* ---- filters ---- */
+  var chips = Array.prototype.slice.call(document.querySelectorAll('.chip'));
+  chips.forEach(function (chip) {
+    chip.addEventListener('click', function () {
+      var want = chip.getAttribute('data-filter');
+      chips.forEach(function (c) { c.classList.toggle('is-on', c === chip); });
+      cards.forEach(function (card) {
+        card.hidden = want !== 'all' && card.getAttribute('data-kind') !== want;
+      });
+    });
+  });
+
+  /* ---- player ---- */
+  var player = document.getElementById('player');
+  var frame  = document.getElementById('player-frame');
+  var title  = document.getElementById('player-title');
+  if (!player || !frame || !title) return;
+
+  var opener = null, current = -1;
+
+  function playable() {
+    return cards.filter(function (c) { return c.dataset.file && !c.hidden; });
+  }
+
+  function show(i) {
+    var list = playable();
+    if (!list.length) return;
+    current = (i + list.length) % list.length;
+    var card = list[current];
+    title.textContent = card.dataset.title;
+    frame.src = 'https://drive.google.com/file/d/' + card.dataset.file + '/preview';
+  }
+
+  function open(card) {
+    opener = card;
+    var list = playable();
+    player.hidden = false;
+    document.body.style.overflow = 'hidden';
+    show(list.indexOf(card));
+    document.addEventListener('keydown', onKey);
+    var close = player.querySelector('[data-player-close]');
+    if (close) close.focus();
+  }
+
+  function close() {
+    player.hidden = true;
+    frame.removeAttribute('src');          // stops playback
+    document.body.style.overflow = '';
+    document.removeEventListener('keydown', onKey);
+    if (opener) opener.focus();
+  }
+
+  function onKey(e) {
+    if (e.key === 'Escape') close();
+    else if (e.key === 'ArrowRight') show(current + 1);
+    else if (e.key === 'ArrowLeft') show(current - 1);
+  }
+
+  cards.forEach(function (card) {
+    if (!card.dataset.file) return;        // Instagram cards are plain links
+    card.addEventListener('click', function () { open(card); });
+  });
+
+  player.querySelector('[data-player-close]').addEventListener('click', close);
+  player.querySelector('[data-player-next]').addEventListener('click', function () { show(current + 1); });
+  player.querySelector('[data-player-prev]').addEventListener('click', function () { show(current - 1); });
+})();
