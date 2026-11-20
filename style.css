@@ -205,126 +205,6 @@ h1, h2, h3, p { margin: 0; }
 .svc__lead  { font-size: 0.95rem; font-weight: 500; }
 .svc__body  { font-size: 0.9rem; color: var(--muted); line-height: 1.6; }
 
-/* ---- project wall (work page) ----
-   One mixed wall: Drive videos that play in place, and Instagram reels that
-   open on Instagram. Cards are 3:4; two feature cards span two columns to
-   break the rhythm. */
-.filters { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-bottom: clamp(1.25rem, 3vw, 1.75rem); }
-.chip {
-  font: inherit; font-size: 0.8rem;
-  padding: 0.4rem 0.9rem; border-radius: 999px;
-  color: var(--muted); background: none; border: 1px solid var(--hair);
-  cursor: url("cursor-hand.png") 9 0, pointer;
-  transition: color 0.25s var(--ease), border-color 0.25s var(--ease), background 0.25s var(--ease);
-}
-.chip:hover { color: var(--ink); border-color: var(--ink); }
-.chip.is-on { color: var(--paper); background: var(--ink); border-color: var(--ink); }
-
-.pgrid { display: grid; grid-template-columns: repeat(2, 1fr); gap: clamp(0.9rem, 2vw, 1.25rem) 0.5rem; }
-@media (min-width: 1080px) { .pgrid { grid-template-columns: repeat(4, 1fr); } }
-@media (min-width: 700px)  { .pcard--wide { grid-column: span 2; } }
-
-.pcard {
-  display: flex; flex-direction: column; gap: 0.1rem;
-  font: inherit; text-align: left; color: inherit;
-  background: none; border: 0; padding: 0;
-  cursor: url("cursor-hand.png") 9 0, pointer;
-}
-.pcard[hidden] { display: none; }
-
-.pcard__media {
-  position: relative; display: block; aspect-ratio: 3 / 4; overflow: hidden;
-  border-radius: 6px; background: var(--band);
-  border: 1px solid var(--hair);
-  margin-bottom: 0.6rem;
-}
-.pcard--wide .pcard__media { aspect-ratio: 16 / 10; }
-.pcard__media img {
-  width: 100%; height: 100%; object-fit: cover;
-  transition: transform 0.7s var(--ease), filter 0.4s var(--ease);
-}
-.pcard:hover .pcard__media img { transform: scale(1.04); }
-
-/* play badge, only on the videos that open in the player */
-.pcard__play {
-  position: absolute; left: 50%; top: 50%;
-  width: 46px; height: 46px; margin: -23px 0 0 -23px;
-  display: grid; place-items: center;
-  border-radius: 50%; background: rgba(17, 17, 17, 0.55);
-  backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
-  color: #fff; font-size: 0.85rem; padding-left: 3px;
-  opacity: 0; transform: scale(0.85);
-  transition: opacity 0.3s var(--ease), transform 0.3s var(--ease);
-}
-.pcard:hover .pcard__play, .pcard:focus-visible .pcard__play { opacity: 1; transform: none; }
-@media (hover: none) { .pcard__play { opacity: 1; transform: none; } }
-
-/* Instagram cards: no thumbnail is available without their embed, so these
-   get a typographic tile instead of a borrowed image. */
-.pcard__media--ig {
-  display: grid; place-items: center;
-  background: linear-gradient(150deg, var(--band), var(--paper));
-}
-.pcard__ig {
-  font-family: var(--mono); font-size: 0.72rem;
-  letter-spacing: 0.22em; text-transform: uppercase; color: var(--muted);
-  transition: color 0.3s var(--ease);
-}
-.pcard:hover .pcard__ig { color: var(--red); }
-
-.pcard__name {
-  font-size: clamp(0.95rem, 1.6vw, 1.1rem); letter-spacing: -0.02em;
-  transition: color 0.25s var(--ease);
-}
-.pcard:hover .pcard__name { color: var(--red); }
-.pcard__meta {
-  font-family: var(--mono); font-size: 0.64rem;
-  letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted);
-}
-
-/* ---- in-page Drive player ---- */
-.player {
-  position: fixed; inset: 0; z-index: 250;
-  display: flex; flex-direction: column;
-  background: rgba(10, 10, 11, 0.94);
-  backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
-  animation: playerIn 0.25s var(--ease);
-}
-.player[hidden] { display: none; }
-@keyframes playerIn { from { opacity: 0; } to { opacity: 1; } }
-
-.player__bar {
-  display: flex; align-items: center; justify-content: space-between; gap: 1rem;
-  padding: 0.9rem clamp(1rem, 4vw, 2rem);
-  color: #f1efe9;
-}
-.player__title {
-  font-family: var(--mono); font-size: 0.72rem;
-  letter-spacing: 0.12em; text-transform: uppercase;
-}
-.player__ctrl { display: flex; align-items: center; gap: 0.4rem; }
-.player__nav, .player__close {
-  font: inherit; font-family: var(--mono); font-size: 0.72rem;
-  letter-spacing: 0.1em; text-transform: uppercase;
-  color: #f1efe9; background: none;
-  border: 1px solid rgba(255, 255, 255, 0.25); border-radius: 4px;
-  padding: 0.35rem 0.7rem;
-  cursor: url("cursor-hand.png") 9 0, pointer;
-  transition: border-color 0.25s var(--ease), background 0.25s var(--ease);
-}
-.player__nav:hover, .player__close:hover { border-color: #fff; background: rgba(255, 255, 255, 0.1); }
-
-.player__frame {
-  flex: 1; min-height: 0;
-  display: grid; place-items: center;
-  padding: 0 clamp(1rem, 4vw, 2rem) clamp(1rem, 4vw, 2rem);
-}
-.player__frame iframe {
-  width: min(100%, calc((100dvh - 120px) * 0.5625));
-  aspect-ratio: 9 / 16; max-height: 100%;
-  border: 0; border-radius: 8px; background: #000;
-}
-
 /* ---- work: stats, experience, clients ----
    Graphite cards (ivory in light mode) with a single quiet bloom of muted
    colour in one corner and a hairline edge. On hover the tile lifts and
@@ -468,8 +348,6 @@ h1, h2, h3, p { margin: 0; }
   html { scroll-behavior: auto; }
   .ticker__track { animation: none; }
   .svc:hover, .stat:hover { transform: none; }
-  .pcard:hover .pcard__media img { transform: none; }
-  .player { animation: none; }
   .stat:hover .stat__num { transform: none; }
   .portfolio:hover .portfolio__go { transform: none; }
   .bar { transition: none; }
