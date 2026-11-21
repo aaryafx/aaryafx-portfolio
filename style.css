@@ -305,7 +305,12 @@ h1, h2, h3, p { margin: 0; }
   padding-block: 0.9rem; overflow: hidden; user-select: none;
 }
 .ticker__track { display: flex; width: max-content; animation: tick 34s linear infinite; }
-.ticker__group { display: flex; align-items: center; flex: 0 0 auto; }
+/* Each repeat must cover the viewport so the next one is already visible
+   throughout the -50% loop, including on wide desktop displays. */
+.ticker__group {
+  display: flex; align-items: center; justify-content: space-around;
+  flex: 0 0 auto; min-width: 100vw;
+}
 .ticker__group span {
   padding-inline: clamp(0.7rem, 2vw, 1.3rem);
   font-size: clamp(0.95rem, 2vw, 1.35rem);
